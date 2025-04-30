@@ -59,6 +59,11 @@
 //
 //    @BeforeEach
 //    void setUp() {
+
+// 각 대학을 생성하는 fixture 함수를 다른 파일에 분리!
+    // 그 함수도 라인을 줄이기 위해서 필수적이지 않은 정보는 기본 정보를 사용하게 한다.
+// given에서 그걸 호출하는식으로 ...
+
 //        UniversityFixture universityFixture = new UniversityFixture(bs)
 //                .지역을_생성한다("AMERICAS", "영미권")
 //                .국가를_생성한다("US", "미국")
