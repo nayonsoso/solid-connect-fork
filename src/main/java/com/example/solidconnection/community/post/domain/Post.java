@@ -85,21 +85,13 @@ public class Post extends BaseEntity {
         this.board = board;
         board.getPostList().add(this);
 
-        if (this.siteUser != null) {
-            this.siteUser.getPostList().remove(this);
-        }
         this.siteUser = siteUser;
-        siteUser.getPostList().add(this);
     }
 
     public void resetBoardAndSiteUser() {
         if (this.board != null) {
             this.board.getPostList().remove(this);
             this.board = null;
-        }
-        if (this.siteUser != null) {
-            this.siteUser.getPostList().remove(this);
-            this.siteUser = null;
         }
     }
 
