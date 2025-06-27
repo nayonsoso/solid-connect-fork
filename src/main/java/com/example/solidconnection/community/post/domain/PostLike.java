@@ -37,11 +37,7 @@ public class PostLike {
         this.post = post;
         post.getPostLikeList().add(this);
 
-        if (this.siteUser != null) {
-            this.siteUser.getPostLikeList().remove(this);
-        }
         this.siteUser = siteUser;
-        siteUser.getPostLikeList().add(this);
     }
 
     public void resetPostAndSiteUser() {
@@ -50,9 +46,6 @@ public class PostLike {
         }
         this.post = null;
 
-        if (this.siteUser != null) {
-            this.siteUser.getPostLikeList().remove(this);
-        }
         this.siteUser = null;
     }
 }
