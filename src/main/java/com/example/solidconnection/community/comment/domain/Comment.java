@@ -74,11 +74,7 @@ public class Comment extends BaseEntity {
         this.post = post;
         post.getCommentList().add(this);
 
-        if (this.siteUser != null) {
-            this.siteUser.getCommentList().remove(this);
-        }
         this.siteUser = siteUser;
-        siteUser.getCommentList().add(this);
     }
 
     public void setPostAndSiteUser(Post post, SiteUser siteUser) {
@@ -89,21 +85,13 @@ public class Comment extends BaseEntity {
         this.post = post;
         post.getCommentList().add(this);
 
-        if (this.siteUser != null) {
-            this.siteUser.getCommentList().remove(this);
-        }
         this.siteUser = siteUser;
-        siteUser.getCommentList().add(this);
     }
 
     public void resetPostAndSiteUserAndParentComment() {
         if (this.post != null) {
             this.post.getCommentList().remove(this);
             this.post = null;
-        }
-        if (this.siteUser != null) {
-            this.siteUser.getCommentList().remove(this);
-            this.siteUser = null;
         }
         if (this.parentComment != null) {
             this.parentComment.getCommentList().remove(this);
