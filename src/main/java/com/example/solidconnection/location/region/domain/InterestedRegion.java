@@ -27,11 +27,9 @@ public class InterestedRegion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    private SiteUser siteUser;
+    private long siteUserId;
 
-    @ManyToOne
-    private Region region;
+    private String regionCode;
 
     public InterestedRegion(SiteUser siteUser, Region region) {
         this.siteUser = siteUser;

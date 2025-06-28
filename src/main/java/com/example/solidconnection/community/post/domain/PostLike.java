@@ -26,9 +26,7 @@ public class PostLike {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "site_user_id")
-    private SiteUser siteUser;
+    private long siteUserId;
 
     public void setPostAndSiteUser(Post post, SiteUser siteUser) {
         if (this.post != null) {

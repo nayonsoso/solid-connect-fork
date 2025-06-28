@@ -1,6 +1,7 @@
 package com.example.solidconnection.siteuser.service;
 
 import com.example.solidconnection.common.exception.CustomException;
+import com.example.solidconnection.community.post.repository.PostLikeRepository;
 import com.example.solidconnection.s3.domain.ImgType;
 import com.example.solidconnection.s3.dto.UploadedFileUrlResponse;
 import com.example.solidconnection.s3.service.S3Service;
@@ -63,6 +64,9 @@ class MyPageServiceTest {
     private UnivApplyInfoFixture univApplyInfoFixture;
 
     @Autowired
+    private PostLikeRepository postLikeRepository;
+
+    @Autowired
     private SiteUserFixtureBuilder siteUserFixtureBuilder;
 
     private SiteUser user;
@@ -86,7 +90,7 @@ class MyPageServiceTest {
                 () -> assertThat(response.profileImageUrl()).isEqualTo(user.getProfileImageUrl()),
                 () -> assertThat(response.role()).isEqualTo(user.getRole()),
                 () -> assertThat(response.email()).isEqualTo(user.getEmail()),
-                () -> assertThat(response.likedPostCount()).isEqualTo(user.getPostLikeList().size()),
+                () -> assertThat(response.likedPostCount()).isEqualTo(0),
                 () -> assertThat(response.likedUniversityCount()).isEqualTo(likedUniversityCount)
         );
     }

@@ -74,8 +74,7 @@ public class Application {
     @Column(name = "third_choice_university_info_for_apply_id")
     private Long thirdChoiceUnivApplyInfoId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private SiteUser siteUser;
+    private long siteUserId;
 
     public Application(
             SiteUser siteUser,

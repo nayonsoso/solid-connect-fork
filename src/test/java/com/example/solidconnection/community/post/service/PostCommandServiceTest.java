@@ -104,7 +104,6 @@ class PostCommandServiceTest {
     class 게시글_생성_테스트 {
 
         @Test
-        @Transactional
         void 게시글을_성공적으로_생성한다() {
             // given
             PostCreateRequest request = createPostCreateRequest(PostCategory.자유.name());

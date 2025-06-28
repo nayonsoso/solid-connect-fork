@@ -12,7 +12,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,8 +37,7 @@ public class GpaScore extends BaseEntity {
 
     private String rejectedReason;
 
-    @ManyToOne
-    private SiteUser siteUser;
+    private long siteUserId;
 
     public GpaScore(Gpa gpa, SiteUser siteUser) {
         this.gpa = gpa;

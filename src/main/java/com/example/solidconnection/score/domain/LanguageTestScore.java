@@ -38,8 +38,7 @@ public class LanguageTestScore extends BaseEntity {
 
     private String rejectedReason;
 
-    @ManyToOne
-    private SiteUser siteUser;
+    private long siteUserId;
 
     public LanguageTestScore(LanguageTest languageTest, SiteUser siteUser) {
         this.languageTest = languageTest;

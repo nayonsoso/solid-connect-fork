@@ -1,13 +1,10 @@
 package com.example.solidconnection.university.domain;
 
-import com.example.solidconnection.location.country.domain.Country;
-import com.example.solidconnection.location.region.domain.Region;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -50,9 +47,7 @@ public class University {
     @Column(length = 1000)
     private String detailsForLocal;
 
-    @ManyToOne
-    private Country country;
+    private String countryCode;
 
-    @ManyToOne
-    private Region region;
+    private String regionCode;
 }

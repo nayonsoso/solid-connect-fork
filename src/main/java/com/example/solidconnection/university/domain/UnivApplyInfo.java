@@ -1,5 +1,6 @@
 package com.example.solidconnection.university.domain;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -76,10 +77,10 @@ public class UnivApplyInfo {
     @Column(length = 1000)
     private String details;
 
-    @OneToMany(mappedBy = "univApplyInfo", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "univApplyInfo", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<LanguageRequirement> languageRequirements = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     private University university;
 
     public void addLanguageRequirements(LanguageRequirement languageRequirements) {

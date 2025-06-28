@@ -1,6 +1,8 @@
 package com.example.solidconnection.siteuser.service;
 
 import com.example.solidconnection.common.exception.CustomException;
+import com.example.solidconnection.community.post.domain.PostLike;
+import com.example.solidconnection.community.post.repository.PostLikeRepository;
 import com.example.solidconnection.s3.domain.ImgType;
 import com.example.solidconnection.s3.dto.UploadedFileUrlResponse;
 import com.example.solidconnection.s3.service.S3Service;
@@ -33,6 +35,7 @@ public class MyPageService {
     private final SiteUserRepository siteUserRepository;
     private final LikedUniversityRepository likedUniversityRepository;
     private final S3Service s3Service;
+    private final PostLikeRepository postLikeRepository;
 
     /*
      * 마이페이지 정보를 조회한다.
@@ -40,6 +43,9 @@ public class MyPageService {
     @Transactional(readOnly = true)
     public MyPageResponse getMyPageInfo(SiteUser siteUser) {
         int likedUniversityCount = likedUniversityRepository.countBySiteUser_Id(siteUser.getId());
+        int likedPostCount = postLikeRepository.countBySiteUser(siteUser);
+        List<PostLike> pl = postLikeRepository.findAllBySiteUser(siteUser);
+        pl.get(0).getPost().getContent();
         return MyPageResponse.of(siteUser, likedUniversityCount);
     }
 

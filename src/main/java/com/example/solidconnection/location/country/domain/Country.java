@@ -23,8 +23,7 @@ public class Country {
     @Column(nullable = false, length = 100)
     private String koreanName;
 
-    @ManyToOne
-    private Region region;
+    private String regionCode;
 
     public Country(String code, String koreanName, Region region) {
         this.code = code;
