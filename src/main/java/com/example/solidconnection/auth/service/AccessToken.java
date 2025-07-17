@@ -1,11 +1,10 @@
 package com.example.solidconnection.auth.service;
 
-public record AccessToken(
-        Subject subject,
-        String token
-) {
+import com.example.solidconnection.auth.domain.TokenType;
+
+public class AccessToken extends Token {
 
     public AccessToken(String subject, String token) {
-        this(new Subject(subject), token);
+        super(new Subject(subject), token, TokenType.ACCESS);
     }
 }

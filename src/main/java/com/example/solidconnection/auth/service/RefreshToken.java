@@ -1,11 +1,10 @@
 package com.example.solidconnection.auth.service;
 
-public record RefreshToken(
-        Subject subject,
-        String token
-) {
+import com.example.solidconnection.auth.domain.TokenType;
 
-    RefreshToken(String subject, String token) {
-        this(new Subject(subject), token);
+public class RefreshToken extends Token {
+
+    public RefreshToken(String subject, String token) {
+        super(new Subject(subject), token, TokenType.REFRESH);
     }
 }
