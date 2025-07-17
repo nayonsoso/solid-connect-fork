@@ -2,16 +2,14 @@ package com.example.solidconnection.auth.service;
 
 import com.example.solidconnection.auth.domain.TokenType;
 import com.example.solidconnection.siteuser.domain.SiteUser;
-import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class AuthTokenProvider {
 
-    private final RedisTemplate<String, String> redisTemplate;
     private final TokenProvider tokenProvider;
 
     public AccessToken generateAccessToken(Subject subject) {
@@ -30,17 +28,15 @@ public class AuthTokenProvider {
      * - 요청된 토큰과 같은 subject 의 리프레시 토큰을 조회한다.
      * - 조회된 리프레시 토큰과 요청된 토큰이 같은지 비교한다.
      * */
-    public boolean isValidRefreshToken(String requestedRefreshToken) {
-        String subject = tokenProvider.parseSubject(requestedRefreshToken);
-        String refreshTokenKey = TokenType.REFRESH.addPrefix(subject);
-        String foundRefreshToken = redisTemplate.opsForValue().get(refreshTokenKey);
-        return Objects.equals(requestedRefreshToken, foundRefreshToken);
+    public boolean isValidRefreshToken(String requestedToken) {
+        Optional<String> foundToken = tokenProvider.findToken(requestedToken, TokenType.REFRESH);
+        return foundToken.isPresent() && foundToken.get().equals(requestedToken);
     }
 
     public void deleteRefreshTokenByAccessToken(AccessToken accessToken) {
         String subject = accessToken.subject().value();
         String refreshTokenKey = TokenType.REFRESH.addPrefix(subject);
-        redisTemplate.delete(refreshTokenKey);
+        tokenProvider.deleteToken(refreshTokenKey);
     }
 
     public Subject parseSubject(String token) {

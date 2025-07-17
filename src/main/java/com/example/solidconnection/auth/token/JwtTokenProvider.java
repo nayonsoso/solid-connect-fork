@@ -10,6 +10,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -45,6 +46,18 @@ public class JwtTokenProvider implements TokenProvider {
                 TimeUnit.MILLISECONDS
         );
         return token;
+    }
+
+    @Override
+    public final Optional<String> findToken(String token, TokenType tokenType) {
+        String subject = parseSubject(token);
+        String tokenKey = tokenType.addPrefix(subject);
+        return Optional.ofNullable(redisTemplate.opsForValue().get(tokenKey));
+    }
+
+    @Override
+    public final void deleteToken(String token) {
+        redisTemplate.delete(token);
     }
 
     @Override
