@@ -5,7 +5,7 @@ import com.example.solidconnection.auth.domain.TokenType;
 public class AccessToken extends Token {
 
     public AccessToken(String subject, String token) {
-        super(new Subject(subject), token, TokenType.ACCESS);
+        super(subject, token, TokenType.ACCESS);
     }
 
     public AccessToken(Token token) {
