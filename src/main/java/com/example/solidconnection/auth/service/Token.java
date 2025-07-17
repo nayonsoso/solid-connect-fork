@@ -10,6 +10,10 @@ public class Token {
     protected final String tokenValue;
     protected final TokenType tokenType;
 
+    public Token(String subject, String tokenValue, TokenType tokenType) {
+        this(new Subject(subject), tokenValue, tokenType);
+    }
+
     public Token(Subject subject, String tokenValue, TokenType tokenType) {
         this.subject = subject;
         this.tokenValue = tokenValue;

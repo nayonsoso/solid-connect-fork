@@ -43,7 +43,7 @@ public class JwtTokenProvider implements TokenProvider {
     public final Token saveToken(Token token) {
         redisTemplate.opsForValue().set(
                 token.getTokenKey(),
-                token.getToken(),
+                token.getTokenValue(),
                 token.getExpiredTime(),
                 TimeUnit.MILLISECONDS
         );
