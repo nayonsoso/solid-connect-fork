@@ -7,12 +7,12 @@ import lombok.Getter;
 public class Token {
 
     protected final Subject subject;
-    protected final String token;
+    protected final String tokenValue;
     protected final TokenType tokenType;
 
-    public Token(Subject subject, String token, TokenType tokenType) {
+    public Token(Subject subject, String tokenValue, TokenType tokenType) {
         this.subject = subject;
-        this.token = token;
+        this.tokenValue = tokenValue;
         this.tokenType = tokenType;
     }
 

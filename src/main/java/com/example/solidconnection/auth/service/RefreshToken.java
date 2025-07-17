@@ -9,6 +9,6 @@ public class RefreshToken extends Token {
     }
 
     public RefreshToken(Token token) {
-        super(token.subject, token.token, TokenType.REFRESH);
+        super(token.subject, token.tokenValue, TokenType.REFRESH);
     }
 }

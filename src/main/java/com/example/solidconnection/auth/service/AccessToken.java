@@ -9,6 +9,6 @@ public class AccessToken extends Token {
     }
 
     public AccessToken(Token token) {
-        super(token.subject, token.token, TokenType.ACCESS);
+        super(token.subject, token.tokenValue, TokenType.ACCESS);
     }
 }
