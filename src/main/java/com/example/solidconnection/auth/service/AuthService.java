@@ -50,12 +50,11 @@ public class AuthService {
      * */
     public ReissueResponse reissue(ReissueRequest reissueRequest) {
         // 리프레시 토큰 확인
-        String requestedRefreshToken = reissueRequest.refreshToken();
-        if (!authTokenProvider.isValidRefreshToken(requestedRefreshToken)) {
+        if (!authTokenProvider.isValidRefreshToken(reissueRequest.refreshToken())) {
             throw new CustomException(REFRESH_TOKEN_EXPIRED);
         }
         // 액세스 토큰 재발급
-        Subject subject = authTokenProvider.parseSubject(requestedRefreshToken);
+        Subject subject = authTokenProvider.parseSubject(reissueRequest.refreshToken());
         AccessToken newAccessToken = authTokenProvider.generateAccessToken(subject);
         return ReissueResponse.from(newAccessToken);
     }
