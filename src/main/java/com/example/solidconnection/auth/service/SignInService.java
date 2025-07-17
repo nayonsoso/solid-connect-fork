@@ -15,7 +15,7 @@ public class SignInService {
     @Transactional
     public SignInResponse signIn(SiteUser siteUser) {
         resetQuitedAt(siteUser);
-        Subject subject = authTokenProvider.toSubject(siteUser);
+        Subject subject = authTokenProvider.generateSubject(siteUser);
         AccessToken accessToken = authTokenProvider.generateAccessToken(subject);
         RefreshToken refreshToken = authTokenProvider.generateAndSaveRefreshToken(subject);
         return SignInResponse.of(accessToken, refreshToken);

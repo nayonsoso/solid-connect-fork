@@ -48,11 +48,11 @@ public class AuthTokenProvider {
         return new Subject(subject);
     }
 
-    public Subject toSubject(SiteUser siteUser) {
+    public Subject generateSubject(SiteUser siteUser) {
         return new Subject(siteUser.getId().toString());
     }
 
-    public AccessToken toAccessToken(String token) {
+    public AccessToken generateAccessToken(String token) {
         return new AccessToken(parseSubject(token), token);
     }
 }
