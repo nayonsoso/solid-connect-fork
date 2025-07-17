@@ -13,8 +13,8 @@ public class AuthTokenProvider {
     private final TokenProvider tokenProvider;
 
     public AccessToken generateAccessToken(Subject subject) {
-        String token = tokenProvider.generateToken(subject.value(), TokenType.ACCESS);
-        return new AccessToken(subject, token);
+        Token token = tokenProvider.generateToken(subject, TokenType.ACCESS);
+        return new AccessToken(token);
     }
 
     public RefreshToken generateAndSaveRefreshToken(Subject subject) {
