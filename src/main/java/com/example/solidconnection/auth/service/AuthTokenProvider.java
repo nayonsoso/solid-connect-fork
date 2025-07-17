@@ -18,9 +18,9 @@ public class AuthTokenProvider {
     }
 
     public RefreshToken generateAndSaveRefreshToken(Subject subject) {
-        String token = tokenProvider.generateToken(subject.value(), TokenType.REFRESH);
-        tokenProvider.saveToken(token, TokenType.REFRESH);
-        return new RefreshToken(subject, token);
+        Token token = tokenProvider.generateToken(subject, TokenType.REFRESH);
+        tokenProvider.saveToken(token);
+        return new RefreshToken(token);
     }
 
     /*

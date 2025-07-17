@@ -8,7 +8,7 @@ public interface TokenProvider {
 
     Token generateToken(Subject subject, TokenType tokenType);
 
-    String saveToken(String token, TokenType tokenType);
+    Token saveToken(Token token);
 
     Optional<String> findToken(String token, TokenType tokenType);
 

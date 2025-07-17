@@ -40,12 +40,11 @@ public class JwtTokenProvider implements TokenProvider {
     }
 
     @Override
-    public final String saveToken(String token, TokenType tokenType) {
-        String subject = parseSubject(token);
+    public final Token saveToken(Token token) {
         redisTemplate.opsForValue().set(
-                tokenType.addPrefix(subject),
-                token,
-                tokenType.getExpireTime(),
+                token.getTokenKey(),
+                token.getToken(),
+                token.getExpiredTime(),
                 TimeUnit.MILLISECONDS
         );
         return token;
