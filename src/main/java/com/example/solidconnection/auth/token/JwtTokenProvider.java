@@ -51,10 +51,14 @@ public class JwtTokenProvider implements TokenProvider {
     }
 
     @Override
-    public final Optional<String> findToken(String token, TokenType tokenType) {
-        String subject = parseSubject(token);
+    public final Optional<Token> findByTokenTypeAndValue(TokenType tokenType, String tokenValue) {
+        String subject = parseSubject(tokenValue);
         String tokenKey = tokenType.addPrefix(subject);
-        return Optional.ofNullable(redisTemplate.opsForValue().get(tokenKey));
+        String foundTokenValue = redisTemplate.opsForValue().get(tokenKey);
+        if (foundTokenValue == null || foundTokenValue.isBlank() || !foundTokenValue.equals(tokenValue)) {
+            return Optional.empty();
+        }
+        return Optional.of(new Token(subject, foundTokenValue, tokenType));
     }
 
     @Override

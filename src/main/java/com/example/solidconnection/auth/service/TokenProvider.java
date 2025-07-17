@@ -10,7 +10,7 @@ public interface TokenProvider {
 
     Token saveToken(Token token);
 
-    Optional<String> findToken(String token, TokenType tokenType);
+    Optional<Token> findByTokenTypeAndValue(TokenType tokenType, String tokenValue);
 
     void deleteToken(String token);
 

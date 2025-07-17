@@ -2,7 +2,6 @@ package com.example.solidconnection.auth.service;
 
 import com.example.solidconnection.auth.domain.TokenType;
 import com.example.solidconnection.siteuser.domain.SiteUser;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -29,8 +28,7 @@ public class AuthTokenProvider {
      * - 조회된 리프레시 토큰과 요청된 토큰이 같은지 비교한다.
      * */
     public boolean isValidRefreshToken(String requestedToken) {
-        Optional<String> foundToken = tokenProvider.findToken(requestedToken, TokenType.REFRESH);
-        return foundToken.isPresent() && foundToken.get().equals(requestedToken);
+        return tokenProvider.findByTokenTypeAndValue(TokenType.REFRESH, requestedToken).isPresent();
     }
 
     public void deleteRefreshTokenByAccessToken(AccessToken accessToken) {
