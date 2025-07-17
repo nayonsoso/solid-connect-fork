@@ -23,8 +23,8 @@ public class JwtTokenProvider implements TokenProvider {
     private final RedisTemplate<String, String> redisTemplate;
 
     @Override
-    public final String generateToken(String string, TokenType tokenType) {
-        Claims claims = Jwts.claims().setSubject(string);
+    public final String generateToken(String subject, TokenType tokenType) {
+        Claims claims = Jwts.claims().setSubject(subject);
         Date now = new Date();
         Date expiredDate = new Date(now.getTime() + tokenType.getExpireTime());
         return Jwts.builder()
