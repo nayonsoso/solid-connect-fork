@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface TokenProvider {
 
-    String generateToken(String string, TokenType tokenType);
+    String generateToken(String token, TokenType tokenType);
 
     String saveToken(String token, TokenType tokenType);
 
