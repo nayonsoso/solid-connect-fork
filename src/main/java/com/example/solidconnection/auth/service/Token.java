@@ -15,4 +15,12 @@ public class Token {
         this.token = token;
         this.tokenType = tokenType;
     }
+
+    public String getTokenKey() {
+        return tokenType.addPrefix(subject.value());
+    }
+
+    public long getExpiredTime() {
+        return tokenType.getExpireTime();
+    }
 }
