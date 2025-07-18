@@ -7,6 +7,6 @@ public record ReissueResponse(
 ) {
 
     public static ReissueResponse from(AccessToken accessToken) {
-        return new ReissueResponse(accessToken.token());
+        return new ReissueResponse(accessToken.getTokenValue());
     }
 }

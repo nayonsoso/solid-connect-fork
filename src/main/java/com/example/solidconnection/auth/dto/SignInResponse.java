@@ -9,6 +9,6 @@ public record SignInResponse(
 ) {
 
     public static SignInResponse of(AccessToken accessToken, RefreshToken refreshToken) {
-        return new SignInResponse(accessToken.token(), refreshToken.token());
+        return new SignInResponse(accessToken.getTokenValue(), refreshToken.getTokenValue());
     }
 }
