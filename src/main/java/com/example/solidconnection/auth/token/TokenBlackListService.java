@@ -22,7 +22,7 @@ public class TokenBlackListService implements BlacklistChecker {
      * - value = {SIGN_OUT_VALUE} -> key 의 존재만 확인하므로, value 에는 무슨 값이 들어가도 상관없다.
      * */
     public void addToBlacklist(AccessToken accessToken) {
-        String blackListKey = BLACKLIST.addPrefix(accessToken.token());
+        String blackListKey = BLACKLIST.addPrefix(accessToken.getTokenValue());
         redisTemplate.opsForValue().set(blackListKey, SIGN_OUT_VALUE);
     }
 
