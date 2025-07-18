@@ -3,15 +3,13 @@ package com.example.solidconnection.auth.service.oauth;
 import static com.example.solidconnection.common.exception.ErrorCode.SIGN_UP_TOKEN_INVALID;
 import static com.example.solidconnection.common.exception.ErrorCode.SIGN_UP_TOKEN_NOT_ISSUED_BY_SERVER;
 
+import com.example.solidconnection.auth.domain.Token;
 import com.example.solidconnection.auth.domain.TokenType;
 import com.example.solidconnection.auth.service.TokenProvider;
-import com.example.solidconnection.auth.token.config.JwtProperties;
 import com.example.solidconnection.common.exception.CustomException;
 import com.example.solidconnection.siteuser.domain.AuthType;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -25,23 +23,15 @@ public class OAuthSignUpTokenProvider {
 
     static final String AUTH_TYPE_CLAIM_KEY = "authType";
 
-    private final JwtProperties jwtProperties;
     private final RedisTemplate<String, String> redisTemplate;
     private final TokenProvider tokenProvider;
 
     public String generateAndSaveSignUpToken(String email, AuthType authType) {
         Map<String, Object> authTypeClaim = new HashMap<>(Map.of(AUTH_TYPE_CLAIM_KEY, authType));
         Claims claims = Jwts.claims(authTypeClaim).setSubject(email);
-        Date now = new Date();
-        Date expiredDate = new Date(now.getTime() + TokenType.SIGN_UP.getExpireTime());
 
-        String signUpToken = Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(expiredDate)
-                .signWith(SignatureAlgorithm.HS512, jwtProperties.secret())
-                .compact();
-        return tokenProvider.saveToken(signUpToken, TokenType.SIGN_UP);
+        Token generateToken = tokenProvider.generateToken(claims, TokenType.SIGN_UP);
+        return tokenProvider.saveToken(generateToken).getTokenValue();
     }
 
     public void validateSignUpToken(String token) {
