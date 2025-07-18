@@ -25,7 +25,7 @@ public class AuthService {
      * - 리프레시 토큰을 삭제한다.
      * */
     public void signOut(String token) {
-        AccessToken accessToken = authTokenProvider.generateAccessToken(token);
+        AccessToken accessToken = authTokenProvider.parseAccessToken(token);
         authTokenProvider.deleteRefreshTokenByAccessToken(accessToken);
         tokenBlackListService.addToBlacklist(accessToken);
     }

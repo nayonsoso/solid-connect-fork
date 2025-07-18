@@ -60,7 +60,7 @@ class AuthServiceTest {
     void 탈퇴한다() {
         // given
         SiteUser user = siteUserFixture.사용자();
-        Subject subject = authTokenProvider.generateSubject(user);
+        Subject subject = authTokenProvider.parseSubject(user);
         AccessToken accessToken = authTokenProvider.generateAccessToken(subject);
 
         // when
