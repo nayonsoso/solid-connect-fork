@@ -3,18 +3,16 @@ package com.example.solidconnection.auth.service.oauth;
 import static com.example.solidconnection.common.exception.ErrorCode.SIGN_UP_TOKEN_INVALID;
 import static com.example.solidconnection.common.exception.ErrorCode.SIGN_UP_TOKEN_NOT_ISSUED_BY_SERVER;
 
+import com.example.solidconnection.auth.domain.Payload;
+import com.example.solidconnection.auth.domain.Subject;
 import com.example.solidconnection.auth.domain.Token;
 import com.example.solidconnection.auth.domain.TokenType;
 import com.example.solidconnection.auth.service.TokenProvider;
+import com.example.solidconnection.auth.service.TokenRepository;
 import com.example.solidconnection.common.exception.CustomException;
 import com.example.solidconnection.siteuser.domain.AuthType;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -23,15 +21,13 @@ public class OAuthSignUpTokenProvider {
 
     static final String AUTH_TYPE_CLAIM_KEY = "authType";
 
-    private final RedisTemplate<String, String> redisTemplate;
     private final TokenProvider tokenProvider;
+    private final TokenRepository tokenRepository;
 
     public String generateAndSaveSignUpToken(String email, AuthType authType) {
-        Map<String, Object> authTypeClaim = new HashMap<>(Map.of(AUTH_TYPE_CLAIM_KEY, authType));
-        Claims claims = Jwts.claims(authTypeClaim).setSubject(email);
-
-        Token generateToken = tokenProvider.generateToken(claims, TokenType.SIGN_UP);
-        return tokenProvider.saveToken(generateToken).getTokenValue();
+        Token token = tokenProvider.generateToken(new Subject(email), TokenType.SIGN_UP);
+        tokenRepository.save(token);
+        return token.getTokenValue();
     }
 
     public void validateSignUpToken(String token) {
@@ -42,29 +38,25 @@ public class OAuthSignUpTokenProvider {
 
     private void validateFormatAndExpiration(String token) {
         try {
-            Claims claims = tokenProvider.parsePayload(token);
-            Objects.requireNonNull(claims.getSubject());
-            String serializedAuthType = claims.get(AUTH_TYPE_CLAIM_KEY, String.class);
-            AuthType.valueOf(serializedAuthType);
+            Payload payload = tokenProvider.parsePayload(token);
+            Objects.requireNonNull(payload);
+            payload.get(AUTH_TYPE_CLAIM_KEY, AuthType.class);
         } catch (Exception e) {
             throw new CustomException(SIGN_UP_TOKEN_INVALID);
         }
     }
 
     private void validateIssuedByServer(String email) {
-        String key = TokenType.SIGN_UP.addPrefix(email);
-        if (redisTemplate.opsForValue().get(key) == null) {
-            throw new CustomException(SIGN_UP_TOKEN_NOT_ISSUED_BY_SERVER);
-        }
+        tokenRepository.findBySubjectAndTokenType(new Subject(email), TokenType.SIGN_UP)
+                .orElseThrow(() -> new CustomException(SIGN_UP_TOKEN_NOT_ISSUED_BY_SERVER));
     }
 
     public String parseEmail(String token) {
-        return tokenProvider.parseSubject(token);
+        return tokenProvider.parseSubject(token).value();
     }
 
     public AuthType parseAuthType(String token) {
-        Claims claims = tokenProvider.parsePayload(token);
-        String authTypeStr = claims.get(AUTH_TYPE_CLAIM_KEY, String.class);
-        return AuthType.valueOf(authTypeStr);
+        Payload payload = tokenProvider.parsePayload(token);
+        return payload.get(AUTH_TYPE_CLAIM_KEY, AuthType.class);
     }
 }
