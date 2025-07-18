@@ -1,6 +1,6 @@
 package com.example.solidconnection.auth.domain;
 
-public class AccessToken extends Token {
+public class AccessToken extends AuthToken {
 
     public AccessToken(Subject subject, String token) {
         super(subject, token, TokenType.ACCESS);
@@ -11,6 +11,6 @@ public class AccessToken extends Token {
     }
 
     public AccessToken(Token token) {
-        super(token.subject, token.tokenValue, TokenType.ACCESS);
+        super(token.claims.subject(), token.tokenValue, TokenType.ACCESS);
     }
 }

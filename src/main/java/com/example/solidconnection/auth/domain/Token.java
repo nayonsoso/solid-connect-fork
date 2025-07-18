@@ -5,22 +5,18 @@ import lombok.Getter;
 @Getter
 public class Token {
 
-    protected final Subject subject;
-    protected final String tokenValue;
-    protected final TokenType tokenType;
+    protected Claims claims;
+    protected String tokenValue;
+    protected TokenType tokenType;
 
-    public Token(String subject, String tokenValue, TokenType tokenType) {
-        this(new Subject(subject), tokenValue, tokenType);
-    }
-
-    public Token(Subject subject, String tokenValue, TokenType tokenType) {
-        this.subject = subject;
+    public Token(Claims claims, String tokenValue, TokenType tokenType) {
+        this.claims = claims;
         this.tokenValue = tokenValue;
         this.tokenType = tokenType;
     }
 
     public String getTokenKey() {
-        return tokenType.addPrefix(subject.value());
+        return tokenType.addPrefix(claims.subject().value());
     }
 
     public long getExpiredTime() {
