@@ -3,20 +3,17 @@ package com.example.solidconnection.auth.service;
 import static com.example.solidconnection.common.exception.ErrorCode.SIGN_UP_TOKEN_INVALID;
 import static com.example.solidconnection.common.exception.ErrorCode.SIGN_UP_TOKEN_NOT_ISSUED_BY_SERVER;
 
+import com.example.solidconnection.auth.domain.Token;
 import com.example.solidconnection.auth.domain.TokenType;
 import com.example.solidconnection.auth.dto.EmailSignUpTokenRequest;
-import com.example.solidconnection.auth.token.config.JwtProperties;
 import com.example.solidconnection.common.exception.CustomException;
 import com.example.solidconnection.siteuser.domain.AuthType;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -28,8 +25,6 @@ public class EmailSignUpTokenProvider {
     static final String AUTH_TYPE_CLAIM_KEY = "authType";
 
     private final PasswordEncoder passwordEncoder;
-    private final JwtProperties jwtProperties;
-    private final RedisTemplate<String, String> redisTemplate;
     private final TokenProvider tokenProvider;
 
     public String generateAndSaveSignUpToken(EmailSignUpTokenRequest request) {
@@ -39,24 +34,18 @@ public class EmailSignUpTokenProvider {
         Map<String, Object> emailSignUpClaims = new HashMap<>(Map.of(
                 PASSWORD_CLAIM_KEY, encodedPassword,
                 AUTH_TYPE_CLAIM_KEY, AuthType.EMAIL
-        ));
-        Claims claims = Jwts.claims(emailSignUpClaims).setSubject(email);
-        Date now = new Date();
-        Date expiredDate = new Date(now.getTime() + TokenType.SIGN_UP.getExpireTime());
+        )); // todo: 비밀번호를 넘기는게 정상이니?
 
-        String signUpToken = Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(expiredDate)
-                .signWith(SignatureAlgorithm.HS512, jwtProperties.secret())
-                .compact();
-        return tokenProvider.saveToken(signUpToken, TokenType.SIGN_UP);
+        // todo: Claims 자체가 없었으면 좋겠다...
+        Claims claims = Jwts.claims(emailSignUpClaims).setSubject(email);
+
+        Token generateToken = tokenProvider.generateToken(claims, TokenType.SIGN_UP);
+        return tokenProvider.saveToken(generateToken).getTokenValue();
     }
 
     public void validateSignUpToken(String token) {
         validateFormatAndExpiration(token);
-        String email = parseEmail(token);
-        validateIssuedByServer(email);
+        validateIssuedByServer(token);
     }
 
     private void validateFormatAndExpiration(String token) {
@@ -70,11 +59,9 @@ public class EmailSignUpTokenProvider {
         }
     }
 
-    private void validateIssuedByServer(String email) {
-        String key = TokenType.SIGN_UP.addPrefix(email);
-        if (redisTemplate.opsForValue().get(key) == null) {
-            throw new CustomException(SIGN_UP_TOKEN_NOT_ISSUED_BY_SERVER);
-        }
+    private void validateIssuedByServer(String token) {
+        tokenProvider.findByTokenTypeAndValue(TokenType.SIGN_UP, token)
+                .orElseThrow(() -> new CustomException(SIGN_UP_TOKEN_NOT_ISSUED_BY_SERVER));
     }
 
     public String parseEmail(String token) {
