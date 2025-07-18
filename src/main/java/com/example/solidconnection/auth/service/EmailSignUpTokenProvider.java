@@ -26,6 +26,7 @@ public class EmailSignUpTokenProvider {
 
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
+    private final TokenRepository tokenRepository;
 
     public String generateAndSaveSignUpToken(EmailSignUpTokenRequest request) {
         String email = request.email();
@@ -38,7 +39,7 @@ public class EmailSignUpTokenProvider {
 
         Payload payload = new Payload(new Subject(email), emailSignUpClaims);
         Token generateToken = tokenProvider.generateToken(payload, TokenType.SIGN_UP);
-        return tokenProvider.saveToken(generateToken).getTokenValue();
+        return tokenRepository.save(generateToken).getTokenValue();
     }
 
     public void validateSignUpToken(String token) {
@@ -58,12 +59,13 @@ public class EmailSignUpTokenProvider {
     }
 
     private void validateIssuedByServer(String token) {
-        tokenProvider.findByTokenTypeAndValue(TokenType.SIGN_UP, token)
+        Subject subject = tokenProvider.parseSubject(token);
+        tokenRepository.findBySubjectAndTokenType(subject, TokenType.SIGN_UP)
                 .orElseThrow(() -> new CustomException(SIGN_UP_TOKEN_NOT_ISSUED_BY_SERVER));
     }
 
     public String parseEmail(String token) {
-        return tokenProvider.parseSubject(token);
+        return tokenProvider.parseSubject(token).value();
     }
 
     public String parseEncodedPassword(String token) {
