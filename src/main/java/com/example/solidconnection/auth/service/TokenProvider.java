@@ -12,7 +12,7 @@ public interface TokenProvider {
 
     Optional<Token> findByTokenTypeAndValue(TokenType tokenType, String tokenValue);
 
-    void deleteToken(String token);
+    void deleteByTokenKey(String token);
 
     String parseSubject(String token);
 

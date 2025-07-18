@@ -62,8 +62,8 @@ public class JwtTokenProvider implements TokenProvider {
     }
 
     @Override
-    public final void deleteToken(String token) {
-        redisTemplate.delete(token);
+    public final void deleteByTokenKey(String tokenKey) {
+        redisTemplate.delete(tokenKey);
     }
 
     @Override

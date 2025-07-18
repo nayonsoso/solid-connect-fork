@@ -34,7 +34,7 @@ public class AuthTokenProvider {
     public void deleteRefreshTokenByAccessToken(AccessToken accessToken) {
         String subject = accessToken.subject().value();
         String refreshTokenKey = TokenType.REFRESH.addPrefix(subject);
-        tokenProvider.deleteToken(refreshTokenKey);
+        tokenProvider.deleteByTokenKey(refreshTokenKey);
     }
 
     public Subject parseSubject(String token) {
