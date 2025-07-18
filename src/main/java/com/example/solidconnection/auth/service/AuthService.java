@@ -23,8 +23,8 @@ public class AuthService {
 
     /*
      * 로그아웃한다.
-     * - 엑세스 토큰을 블랙리스트에 추가한다.
      * - 리프레시 토큰을 삭제한다.
+     * - 엑세스 토큰을 블랙리스트에 추가한다.
      * */
     public void signOut(String token) {
         AccessToken accessToken = authTokenProvider.parseAccessToken(token);
