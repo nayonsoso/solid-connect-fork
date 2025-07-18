@@ -13,10 +13,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -24,7 +21,6 @@ import org.springframework.stereotype.Component;
 public class JwtTokenProvider implements TokenProvider {
 
     private final JwtProperties jwtProperties;
-    private final RedisTemplate<String, String> redisTemplate;
 
     @Override
     public final Token generateToken(Subject subject, TokenType tokenType) {
@@ -53,35 +49,9 @@ public class JwtTokenProvider implements TokenProvider {
     }
 
     @Override
-    public final Token saveToken(Token token) {
-        redisTemplate.opsForValue().set(
-                token.getTokenKey(),
-                token.getTokenValue(),
-                token.getExpiredTime(),
-                TimeUnit.MILLISECONDS
-        );
-        return token;
-    }
-
-    @Override
-    public final Optional<Token> findByTokenTypeAndValue(TokenType tokenType, String tokenValue) {
-        String subject = parseSubject(tokenValue);
-        String tokenKey = tokenType.addPrefix(subject);
-        String foundTokenValue = redisTemplate.opsForValue().get(tokenKey);
-        if (foundTokenValue == null || foundTokenValue.isBlank() || !foundTokenValue.equals(tokenValue)) {
-            return Optional.empty();
-        }
-        return Optional.of(new Token(subject, foundTokenValue, tokenType));
-    }
-
-    @Override
-    public final void deleteByTokenKey(String tokenKey) {
-        redisTemplate.delete(tokenKey);
-    }
-
-    @Override
-    public String parseSubject(String token) {
-        return parsePayload(token).subject().value();
+    public Subject parseSubject(String token) {
+        String subject = parsePayload(token).subject().value();
+        return new Subject(subject);
     }
 
     @Override

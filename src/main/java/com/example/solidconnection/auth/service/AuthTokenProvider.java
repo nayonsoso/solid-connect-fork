@@ -6,6 +6,7 @@ import com.example.solidconnection.auth.domain.Subject;
 import com.example.solidconnection.auth.domain.Token;
 import com.example.solidconnection.auth.domain.TokenType;
 import com.example.solidconnection.siteuser.domain.SiteUser;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 public class AuthTokenProvider {
 
     private final TokenProvider tokenProvider;
+    private final TokenRepository tokenRepository;
 
     public AccessToken generateAccessToken(Subject subject) {
         Token token = tokenProvider.generateToken(subject, TokenType.ACCESS);
@@ -22,7 +24,7 @@ public class AuthTokenProvider {
 
     public RefreshToken generateAndSaveRefreshToken(Subject subject) {
         Token token = tokenProvider.generateToken(subject, TokenType.REFRESH);
-        tokenProvider.saveToken(token);
+        tokenRepository.save(token);
         return new RefreshToken(token);
     }
 
@@ -32,18 +34,18 @@ public class AuthTokenProvider {
      * - 조회된 리프레시 토큰과 요청된 토큰이 같은지 비교한다.
      * */
     public boolean isValidRefreshToken(String requestedToken) {
-        return tokenProvider.findByTokenTypeAndValue(TokenType.REFRESH, requestedToken).isPresent();
+        Subject subject = tokenProvider.parseSubject(requestedToken);
+        Optional<Token> optionalToken = tokenRepository.findBySubjectAndTokenType(subject, TokenType.REFRESH);
+        return optionalToken.isPresent() && optionalToken.get().getTokenValue().equals(requestedToken);
     }
 
     public void deleteRefreshTokenByAccessToken(AccessToken accessToken) {
-        String subject = accessToken.getPayload().subject().value();
-        String refreshTokenKey = TokenType.REFRESH.addPrefix(subject);
-        tokenProvider.deleteByTokenKey(refreshTokenKey);
+        Subject subject = accessToken.getPayload().subject();
+        tokenRepository.deleteBySubjectAndTokenType(subject, TokenType.REFRESH);
     }
 
     public Subject parseSubject(String token) {
-        String subject = tokenProvider.parseSubject(token);
-        return new Subject(subject);
+        return tokenProvider.parseSubject(token);
     }
 
     public Subject parseSubject(SiteUser siteUser) {
