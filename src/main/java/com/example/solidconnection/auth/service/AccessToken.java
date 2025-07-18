@@ -4,6 +4,10 @@ import com.example.solidconnection.auth.domain.TokenType;
 
 public class AccessToken extends Token {
 
+    public AccessToken(Subject subject, String token) {
+        super(subject, token, TokenType.ACCESS);
+    }
+
     public AccessToken(String subject, String token) {
         super(subject, token, TokenType.ACCESS);
     }
