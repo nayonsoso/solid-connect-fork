@@ -1,4 +1,4 @@
-package com.example.solidconnection.auth.token;
+package com.example.solidconnection.auth.infrastructure.token;
 
 import static com.example.solidconnection.common.exception.ErrorCode.INVALID_TOKEN;
 
@@ -7,7 +7,7 @@ import com.example.solidconnection.auth.domain.Subject;
 import com.example.solidconnection.auth.domain.Token;
 import com.example.solidconnection.auth.domain.TokenType;
 import com.example.solidconnection.auth.service.TokenProvider;
-import com.example.solidconnection.auth.token.config.JwtProperties;
+import com.example.solidconnection.auth.infrastructure.token.config.JwtProperties;
 import com.example.solidconnection.common.exception.CustomException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

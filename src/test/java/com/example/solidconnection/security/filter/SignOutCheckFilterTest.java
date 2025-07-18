@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.spy;
 
-import com.example.solidconnection.auth.token.config.JwtProperties;
+import com.example.solidconnection.auth.infrastructure.token.config.JwtProperties;
 import com.example.solidconnection.common.exception.CustomException;
 import com.example.solidconnection.support.TestContainerSpringBootTest;
 import io.jsonwebtoken.Jwts;

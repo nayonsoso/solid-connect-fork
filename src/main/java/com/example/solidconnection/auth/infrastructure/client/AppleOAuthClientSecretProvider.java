@@ -1,8 +1,8 @@
-package com.example.solidconnection.auth.client;
+package com.example.solidconnection.auth.infrastructure.client;
 
 import static com.example.solidconnection.common.exception.ErrorCode.FAILED_TO_READ_APPLE_PRIVATE_KEY;
 
-import com.example.solidconnection.auth.client.config.AppleOAuthClientProperties;
+import com.example.solidconnection.auth.infrastructure.client.config.AppleOAuthClientProperties;
 import com.example.solidconnection.common.exception.CustomException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

@@ -1,4 +1,4 @@
-package com.example.solidconnection.auth.token;
+package com.example.solidconnection.auth.infrastructure.token;
 
 import static com.example.solidconnection.auth.domain.TokenType.BLACKLIST;
 

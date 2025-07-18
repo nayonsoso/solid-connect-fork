@@ -1,4 +1,4 @@
-package com.example.solidconnection.auth.client.config;
+package com.example.solidconnection.auth.infrastructure.client.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

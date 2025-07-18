@@ -11,7 +11,7 @@ import com.example.solidconnection.auth.domain.Subject;
 import com.example.solidconnection.auth.domain.TokenType;
 import com.example.solidconnection.auth.dto.ReissueRequest;
 import com.example.solidconnection.auth.dto.ReissueResponse;
-import com.example.solidconnection.auth.token.TokenBlackListService;
+import com.example.solidconnection.auth.infrastructure.token.TokenBlackListService;
 import com.example.solidconnection.common.exception.CustomException;
 import com.example.solidconnection.siteuser.domain.SiteUser;
 import com.example.solidconnection.siteuser.fixture.SiteUserFixture;

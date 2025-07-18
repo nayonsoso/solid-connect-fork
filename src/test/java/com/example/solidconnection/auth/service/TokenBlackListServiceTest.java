@@ -4,7 +4,7 @@ import static com.example.solidconnection.auth.domain.TokenType.BLACKLIST;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.example.solidconnection.auth.domain.AccessToken;
-import com.example.solidconnection.auth.token.TokenBlackListService;
+import com.example.solidconnection.auth.infrastructure.token.TokenBlackListService;
 import com.example.solidconnection.support.TestContainerSpringBootTest;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

@@ -5,8 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.example.solidconnection.auth.domain.TokenType;
-import com.example.solidconnection.auth.token.JwtTokenProvider;
-import com.example.solidconnection.auth.token.config.JwtProperties;
+import com.example.solidconnection.auth.infrastructure.token.JwtTokenProvider;
+import com.example.solidconnection.auth.infrastructure.token.config.JwtProperties;
 import com.example.solidconnection.common.exception.CustomException;
 import com.example.solidconnection.common.exception.ErrorCode;
 import com.example.solidconnection.support.TestContainerSpringBootTest;

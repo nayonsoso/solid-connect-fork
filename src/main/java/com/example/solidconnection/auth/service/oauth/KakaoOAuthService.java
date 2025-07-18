@@ -1,6 +1,6 @@
 package com.example.solidconnection.auth.service.oauth;
 
-import com.example.solidconnection.auth.client.KakaoOAuthClient;
+import com.example.solidconnection.auth.infrastructure.client.KakaoOAuthClient;
 import com.example.solidconnection.auth.dto.oauth.OAuthUserInfoDto;
 import com.example.solidconnection.auth.service.SignInService;
 import com.example.solidconnection.siteuser.domain.AuthType;

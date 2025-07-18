@@ -1,9 +1,9 @@
-package com.example.solidconnection.auth.client;
+package com.example.solidconnection.auth.infrastructure.client;
 
 import static com.example.solidconnection.common.exception.ErrorCode.APPLE_AUTHORIZATION_FAILED;
 import static com.example.solidconnection.common.exception.ErrorCode.INVALID_APPLE_ID_TOKEN;
 
-import com.example.solidconnection.auth.client.config.AppleOAuthClientProperties;
+import com.example.solidconnection.auth.infrastructure.client.config.AppleOAuthClientProperties;
 import com.example.solidconnection.auth.dto.oauth.AppleTokenDto;
 import com.example.solidconnection.auth.dto.oauth.AppleUserInfoDto;
 import com.example.solidconnection.common.exception.CustomException;

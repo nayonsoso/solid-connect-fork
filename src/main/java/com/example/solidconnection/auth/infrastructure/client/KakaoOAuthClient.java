@@ -1,10 +1,10 @@
-package com.example.solidconnection.auth.client;
+package com.example.solidconnection.auth.infrastructure.client;
 
 import static com.example.solidconnection.common.exception.ErrorCode.INVALID_OR_EXPIRED_KAKAO_AUTH_CODE;
 import static com.example.solidconnection.common.exception.ErrorCode.KAKAO_REDIRECT_URI_MISMATCH;
 import static com.example.solidconnection.common.exception.ErrorCode.KAKAO_USER_INFO_FAIL;
 
-import com.example.solidconnection.auth.client.config.KakaoOAuthClientProperties;
+import com.example.solidconnection.auth.infrastructure.client.config.KakaoOAuthClientProperties;
 import com.example.solidconnection.auth.dto.oauth.KakaoTokenDto;
 import com.example.solidconnection.auth.dto.oauth.KakaoUserInfoDto;
 import com.example.solidconnection.common.exception.CustomException;

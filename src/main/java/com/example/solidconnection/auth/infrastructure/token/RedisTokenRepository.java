@@ -1,4 +1,4 @@
-package com.example.solidconnection.auth.token;
+package com.example.solidconnection.auth.infrastructure.token;
 
 import com.example.solidconnection.auth.domain.Subject;
 import com.example.solidconnection.auth.domain.Token;

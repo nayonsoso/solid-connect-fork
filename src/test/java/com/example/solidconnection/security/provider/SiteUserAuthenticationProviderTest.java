@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import com.example.solidconnection.auth.token.config.JwtProperties;
+import com.example.solidconnection.auth.infrastructure.token.config.JwtProperties;
 import com.example.solidconnection.common.exception.CustomException;
 import com.example.solidconnection.security.authentication.SiteUserAuthentication;
 import com.example.solidconnection.security.userdetails.SiteUserDetails;
