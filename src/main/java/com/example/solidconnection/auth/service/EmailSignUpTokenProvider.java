@@ -3,13 +3,13 @@ package com.example.solidconnection.auth.service;
 import static com.example.solidconnection.common.exception.ErrorCode.SIGN_UP_TOKEN_INVALID;
 import static com.example.solidconnection.common.exception.ErrorCode.SIGN_UP_TOKEN_NOT_ISSUED_BY_SERVER;
 
+import com.example.solidconnection.auth.domain.Subject;
+import com.example.solidconnection.auth.domain.Payload;
 import com.example.solidconnection.auth.domain.Token;
 import com.example.solidconnection.auth.domain.TokenType;
 import com.example.solidconnection.auth.dto.EmailSignUpTokenRequest;
 import com.example.solidconnection.common.exception.CustomException;
 import com.example.solidconnection.siteuser.domain.AuthType;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -36,10 +36,8 @@ public class EmailSignUpTokenProvider {
                 AUTH_TYPE_CLAIM_KEY, AuthType.EMAIL
         )); // todo: 비밀번호를 넘기는게 정상이니?
 
-        // todo: Claims 자체가 없었으면 좋겠다...
-        Claims claims = Jwts.claims(emailSignUpClaims).setSubject(email);
-
-        Token generateToken = tokenProvider.generateToken(claims, TokenType.SIGN_UP);
+        Payload payload = new Payload(new Subject(email), emailSignUpClaims);
+        Token generateToken = tokenProvider.generateToken(payload, TokenType.SIGN_UP);
         return tokenProvider.saveToken(generateToken).getTokenValue();
     }
 
@@ -50,9 +48,9 @@ public class EmailSignUpTokenProvider {
 
     private void validateFormatAndExpiration(String token) {
         try {
-            Claims claims = tokenProvider.parseClaims(token);
-            Objects.requireNonNull(claims.getSubject());
-            String encodedPassword = claims.get(PASSWORD_CLAIM_KEY, String.class);
+            Payload payload = tokenProvider.parsePayload(token);
+            Objects.requireNonNull(payload.subject());
+            String encodedPassword = payload.get(PASSWORD_CLAIM_KEY, String.class);
             Objects.requireNonNull(encodedPassword);
         } catch (Exception e) {
             throw new CustomException(SIGN_UP_TOKEN_INVALID);
@@ -69,7 +67,7 @@ public class EmailSignUpTokenProvider {
     }
 
     public String parseEncodedPassword(String token) {
-        Claims claims = tokenProvider.parseClaims(token);
-        return claims.get(PASSWORD_CLAIM_KEY, String.class);
+        Payload payload = tokenProvider.parsePayload(token);
+        return payload.get(PASSWORD_CLAIM_KEY, String.class);
     }
 }

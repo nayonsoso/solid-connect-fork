@@ -45,7 +45,7 @@ class JwtTokenProviderTest {
         String token = tokenProvider.generateToken(actualSubject, actualTokenType);
 
         // then - subject와 만료 시간이 일치하는지 검증
-        Claims claims = tokenProvider.parseClaims(token);
+        Claims claims = tokenProvider.parsePayload(token);
         long expectedExpireTime = claims.getExpiration().getTime() - claims.getIssuedAt().getTime();
         assertAll(
                 () -> assertThat(claims.getSubject()).isEqualTo(actualSubject),
@@ -114,7 +114,7 @@ class JwtTokenProviderTest {
             String token = createValidToken(expectedClaims);
 
             // when
-            Claims actualClaims = tokenProvider.parseClaims(token);
+            Claims actualClaims = tokenProvider.parsePayload(token);
 
             // then
             assertAll(
@@ -131,7 +131,7 @@ class JwtTokenProviderTest {
             String token = createExpiredToken(expectedClaims);
 
             // when
-            assertThatCode(() -> tokenProvider.parseClaims(token))
+            assertThatCode(() -> tokenProvider.parsePayload(token))
                     .isInstanceOf(CustomException.class)
                     .hasMessage(ErrorCode.INVALID_TOKEN.getMessage());
         }

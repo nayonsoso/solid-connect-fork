@@ -42,7 +42,7 @@ public class OAuthSignUpTokenProvider {
 
     private void validateFormatAndExpiration(String token) {
         try {
-            Claims claims = tokenProvider.parseClaims(token);
+            Claims claims = tokenProvider.parsePayload(token);
             Objects.requireNonNull(claims.getSubject());
             String serializedAuthType = claims.get(AUTH_TYPE_CLAIM_KEY, String.class);
             AuthType.valueOf(serializedAuthType);
@@ -63,7 +63,7 @@ public class OAuthSignUpTokenProvider {
     }
 
     public AuthType parseAuthType(String token) {
-        Claims claims = tokenProvider.parseClaims(token);
+        Claims claims = tokenProvider.parsePayload(token);
         String authTypeStr = claims.get(AUTH_TYPE_CLAIM_KEY, String.class);
         return AuthType.valueOf(authTypeStr);
     }

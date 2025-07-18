@@ -16,8 +16,7 @@ public class CommonSignUpTokenProvider {
 
     public AuthType parseAuthType(String signUpToken) {
         try {
-            String authTypeStr = tokenProvider.parseClaims(signUpToken).get(AUTH_TYPE_CLAIM_KEY, String.class);
-            return AuthType.valueOf(authTypeStr);
+            return tokenProvider.parsePayload(signUpToken).get(AUTH_TYPE_CLAIM_KEY, AuthType.class);
         } catch (Exception e) {
             throw new CustomException(SIGN_UP_TOKEN_INVALID);
         }

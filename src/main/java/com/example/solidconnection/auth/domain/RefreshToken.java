@@ -1,8 +1,8 @@
 package com.example.solidconnection.auth.domain;
 
-public class RefreshToken extends AuthToken {
+public class RefreshToken extends Token {
 
     public RefreshToken(Token token) {
-        super(token.claims.subject(), token.tokenValue, TokenType.REFRESH);
+        super(token.getPayload(), token.getTokenValue(), token.getTokenType());
     }
 }
