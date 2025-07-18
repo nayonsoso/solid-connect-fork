@@ -1,23 +1,4 @@
-package com.example.solidconnection.security.provider;
-
-import com.example.solidconnection.common.exception.CustomException;
-import com.example.solidconnection.security.authentication.SiteUserAuthentication;
-import com.example.solidconnection.auth.token.config.JwtProperties;
-import com.example.solidconnection.security.userdetails.SiteUserDetails;
-import com.example.solidconnection.siteuser.domain.SiteUser;
-import com.example.solidconnection.siteuser.fixture.SiteUserFixture;
-import com.example.solidconnection.support.TestContainerSpringBootTest;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-
-import java.net.PasswordAuthentication;
-import java.util.Date;
+package com.example.solidconnection.security.authentication;
 
 import static com.example.solidconnection.common.exception.ErrorCode.AUTHENTICATION_FAILED;
 import static com.example.solidconnection.common.exception.ErrorCode.INVALID_TOKEN;
@@ -25,12 +6,29 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import com.example.solidconnection.auth.token.config.JwtProperties;
+import com.example.solidconnection.common.exception.CustomException;
+import com.example.solidconnection.security.userdetails.SiteUserDetails;
+import com.example.solidconnection.siteuser.domain.SiteUser;
+import com.example.solidconnection.siteuser.fixture.SiteUserFixture;
+import com.example.solidconnection.support.TestContainerSpringBootTest;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import java.net.PasswordAuthentication;
+import java.util.Date;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+
 @TestContainerSpringBootTest
 @DisplayName("사용자 인증정보 provider 테스트")
-class SiteUserAuthenticationProviderTest {
+class TokenAuthenticationProviderTest {
 
     @Autowired
-    private SiteUserAuthenticationProvider siteUserAuthenticationProvider;
+    private TokenAuthenticationProvider tokenAuthenticationProvider;
 
     @Autowired
     private JwtProperties jwtProperties;
@@ -48,13 +46,13 @@ class SiteUserAuthenticationProviderTest {
     @Test
     void 처리할_수_있는_타입인지를_반환한다() {
         // given
-        Class<?> supportedType = SiteUserAuthentication.class;
+        Class<?> supportedType = TokenAuthentication.class;
         Class<?> notSupportedType = PasswordAuthentication.class;
 
         // when & then
         assertAll(
-                () -> assertThat(siteUserAuthenticationProvider.supports(supportedType)).isTrue(),
-                () -> assertThat(siteUserAuthenticationProvider.supports(notSupportedType)).isFalse()
+                () -> assertThat(tokenAuthenticationProvider.supports(supportedType)).isTrue(),
+                () -> assertThat(tokenAuthenticationProvider.supports(notSupportedType)).isFalse()
         );
     }
 
@@ -62,10 +60,10 @@ class SiteUserAuthenticationProviderTest {
     void 유효한_토큰이면_정상적으로_인증_정보를_반환한다() {
         // given
         String token = createValidToken(user.getId());
-        SiteUserAuthentication auth = new SiteUserAuthentication(token);
+        TokenAuthentication auth = new TokenAuthentication(token);
 
         // when
-        Authentication result = siteUserAuthenticationProvider.authenticate(auth);
+        Authentication result = tokenAuthenticationProvider.authenticate(auth);
 
         // then
         assertThat(result).isNotNull();
@@ -81,10 +79,10 @@ class SiteUserAuthenticationProviderTest {
         @Test
         void 유효하지_않은_토큰이면_예외가_발생한다() {
             // given
-            SiteUserAuthentication expiredAuth = new SiteUserAuthentication(createExpiredToken());
+            TokenAuthentication expiredAuth = new TokenAuthentication(createExpiredToken());
 
             // when & then
-            assertThatCode(() -> siteUserAuthenticationProvider.authenticate(expiredAuth))
+            assertThatCode(() -> tokenAuthenticationProvider.authenticate(expiredAuth))
                     .isInstanceOf(CustomException.class)
                     .hasMessageContaining(INVALID_TOKEN.getMessage());
         }
@@ -92,10 +90,11 @@ class SiteUserAuthenticationProviderTest {
         @Test
         void 사용자_정보의_형식이_다르면_예외가_발생한다() {
             // given
-            SiteUserAuthentication wrongSubjectTypeAuth = new SiteUserAuthentication(createWrongSubjectTypeToken());
+            TokenAuthentication wrongSubjectTypeAuth = new TokenAuthentication(
+                    createWrongSubjectTypeToken());
 
             // when & then
-            assertThatCode(() -> siteUserAuthenticationProvider.authenticate(wrongSubjectTypeAuth))
+            assertThatCode(() -> tokenAuthenticationProvider.authenticate(wrongSubjectTypeAuth))
                     .isInstanceOf(CustomException.class)
                     .hasMessageContaining(INVALID_TOKEN.getMessage());
         }
@@ -105,10 +104,10 @@ class SiteUserAuthenticationProviderTest {
             // given
             long notExistingUserId = user.getId() + 100;
             String token = createValidToken(notExistingUserId);
-            SiteUserAuthentication auth = new SiteUserAuthentication(token);
+            TokenAuthentication auth = new TokenAuthentication(token);
 
             // when & then
-            assertThatCode(() -> siteUserAuthenticationProvider.authenticate(auth))
+            assertThatCode(() -> tokenAuthenticationProvider.authenticate(auth))
                     .isInstanceOf(CustomException.class)
                     .hasMessageContaining(AUTHENTICATION_FAILED.getMessage());
         }
