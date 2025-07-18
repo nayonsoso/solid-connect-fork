@@ -10,6 +10,8 @@ public interface TokenProvider {
 
     Token generateToken(Subject subject, TokenType tokenType);
 
+    Token generateToken(Claims claims, TokenType tokenType);
+
     Token saveToken(Token token);
 
     Optional<Token> findByTokenTypeAndValue(TokenType tokenType, String tokenValue);

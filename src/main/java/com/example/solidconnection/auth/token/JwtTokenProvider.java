@@ -2,9 +2,9 @@ package com.example.solidconnection.auth.token;
 
 import static com.example.solidconnection.common.exception.ErrorCode.INVALID_TOKEN;
 
-import com.example.solidconnection.auth.domain.TokenType;
 import com.example.solidconnection.auth.domain.Subject;
 import com.example.solidconnection.auth.domain.Token;
+import com.example.solidconnection.auth.domain.TokenType;
 import com.example.solidconnection.auth.service.TokenProvider;
 import com.example.solidconnection.auth.token.config.JwtProperties;
 import com.example.solidconnection.common.exception.CustomException;
@@ -28,6 +28,11 @@ public class JwtTokenProvider implements TokenProvider {
     @Override
     public final Token generateToken(Subject subject, TokenType tokenType) {
         Claims claims = Jwts.claims().setSubject(subject.value());
+        return generateToken(claims, tokenType);
+    }
+
+    @Override
+    public Token generateToken(Claims claims, TokenType tokenType) {
         Date now = new Date();
         Date expiredDate = new Date(now.getTime() + tokenType.getExpireTime());
         String token = Jwts.builder()
@@ -36,7 +41,7 @@ public class JwtTokenProvider implements TokenProvider {
                 .setExpiration(expiredDate)
                 .signWith(SignatureAlgorithm.HS512, jwtProperties.secret())
                 .compact();
-        return new Token(subject, token, tokenType);
+        return new Token(claims.getSubject(), token, tokenType);
     }
 
     @Override
