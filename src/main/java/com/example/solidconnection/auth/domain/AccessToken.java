@@ -1,6 +1,4 @@
-package com.example.solidconnection.auth.service;
-
-import com.example.solidconnection.auth.domain.TokenType;
+package com.example.solidconnection.auth.domain;
 
 public class AccessToken extends Token {
 

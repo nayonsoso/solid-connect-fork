@@ -1,6 +1,5 @@
-package com.example.solidconnection.auth.service;
+package com.example.solidconnection.auth.domain;
 
-import com.example.solidconnection.auth.domain.TokenType;
 import lombok.Getter;
 
 @Getter

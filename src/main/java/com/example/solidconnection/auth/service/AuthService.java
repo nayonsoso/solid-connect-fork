@@ -2,6 +2,8 @@ package com.example.solidconnection.auth.service;
 
 import static com.example.solidconnection.common.exception.ErrorCode.REFRESH_TOKEN_EXPIRED;
 
+import com.example.solidconnection.auth.domain.AccessToken;
+import com.example.solidconnection.auth.domain.Subject;
 import com.example.solidconnection.auth.dto.ReissueRequest;
 import com.example.solidconnection.auth.dto.ReissueResponse;
 import com.example.solidconnection.auth.token.TokenBlackListService;
