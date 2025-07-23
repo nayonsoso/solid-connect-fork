@@ -14,8 +14,7 @@ import com.example.solidconnection.auth.service.CommonSignUpTokenProvider;
 import com.example.solidconnection.auth.service.EmailSignInService;
 import com.example.solidconnection.auth.service.EmailSignUpService;
 import com.example.solidconnection.auth.service.EmailSignUpTokenProvider;
-import com.example.solidconnection.auth.service.oauth.AppleOAuthService;
-import com.example.solidconnection.auth.service.oauth.KakaoOAuthService;
+import com.example.solidconnection.auth.service.oauth.OAuthService;
 import com.example.solidconnection.auth.service.oauth.OAuthSignUpService;
 import com.example.solidconnection.common.exception.CustomException;
 import com.example.solidconnection.common.exception.ErrorCode;
@@ -38,9 +37,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
+    private final OAuthService oAuthService;
     private final OAuthSignUpService oAuthSignUpService;
-    private final AppleOAuthService appleOAuthService;
-    private final KakaoOAuthService kakaoOAuthService;
     private final EmailSignInService emailSignInService;
     private final EmailSignUpService emailSignUpService;
     private final EmailSignUpTokenProvider emailSignUpTokenProvider;
@@ -50,7 +48,7 @@ public class AuthController {
     public ResponseEntity<OAuthResponse> processAppleOAuth(
             @Valid @RequestBody OAuthCodeRequest oAuthCodeRequest
     ) {
-        OAuthResponse oAuthResponse = appleOAuthService.processOAuth(oAuthCodeRequest);
+        OAuthResponse oAuthResponse = oAuthService.processOAuth(AuthType.APPLE, oAuthCodeRequest);
         return ResponseEntity.ok(oAuthResponse);
     }
 
@@ -58,7 +56,7 @@ public class AuthController {
     public ResponseEntity<OAuthResponse> processKakaoOAuth(
             @Valid @RequestBody OAuthCodeRequest oAuthCodeRequest
     ) {
-        OAuthResponse oAuthResponse = kakaoOAuthService.processOAuth(oAuthCodeRequest);
+        OAuthResponse oAuthResponse = oAuthService.processOAuth(AuthType.KAKAO, oAuthCodeRequest);
         return ResponseEntity.ok(oAuthResponse);
     }
 
