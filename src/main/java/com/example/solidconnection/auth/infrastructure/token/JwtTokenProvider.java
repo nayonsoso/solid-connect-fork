@@ -4,10 +4,9 @@ import static com.example.solidconnection.common.exception.ErrorCode.INVALID_TOK
 
 import com.example.solidconnection.auth.domain.Payload;
 import com.example.solidconnection.auth.domain.Subject;
-import com.example.solidconnection.auth.domain.Token;
 import com.example.solidconnection.auth.domain.TokenType;
-import com.example.solidconnection.auth.service.TokenProvider;
 import com.example.solidconnection.auth.infrastructure.token.config.JwtProperties;
+import com.example.solidconnection.auth.service.TokenProvider;
 import com.example.solidconnection.common.exception.CustomException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -23,21 +22,19 @@ public class JwtTokenProvider implements TokenProvider {
     private final JwtProperties jwtProperties;
 
     @Override
-    public final Token generateToken(Subject subject, TokenType tokenType) {
+    public final String generateTokenValue(Subject subject, TokenType tokenType) {
         Claims claims = Jwts.claims().setSubject(subject.value());
-        String tokenValue = generateTokenValue(claims, tokenType);
-        return new Token(subject, tokenValue, tokenType);
+        return generateJwtTokenValue(claims, tokenType);
     }
 
     @Override
-    public Token generateToken(Payload payload, TokenType tokenType) {
+    public String generateTokenValue(Payload payload, TokenType tokenType) {
         Claims claims = Jwts.claims().setSubject(payload.subject().value());
         claims.putAll(payload.claims());
-        String tokenValue = generateTokenValue(claims, tokenType);
-        return new Token(payload, tokenValue, tokenType);
+        return generateJwtTokenValue(claims, tokenType);
     }
 
-    private String generateTokenValue(Claims claims, TokenType tokenType) {
+    private String generateJwtTokenValue(Claims claims, TokenType tokenType) {
         Date now = new Date();
         Date expiredDate = new Date(now.getTime() + tokenType.getExpireTime());
         return Jwts.builder()

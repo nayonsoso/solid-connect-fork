@@ -18,14 +18,15 @@ public class AuthTokenService {
     private final TokenRepository tokenRepository;
 
     public AccessToken generateAccessToken(Subject subject) {
-        Token token = tokenProvider.generateToken(subject, TokenType.ACCESS);
-        return new AccessToken(token);
+        String tokenValue = tokenProvider.generateTokenValue(subject, TokenType.ACCESS);
+        return new AccessToken(subject, tokenValue);
     }
 
     public RefreshToken generateAndSaveRefreshToken(Subject subject) {
-        Token token = tokenProvider.generateToken(subject, TokenType.REFRESH);
-        tokenRepository.save(token);
-        return new RefreshToken(token);
+        String tokenValue = tokenProvider.generateTokenValue(subject, TokenType.REFRESH);
+        RefreshToken refreshToken = new RefreshToken(subject, tokenValue);
+        tokenRepository.save(refreshToken);
+        return refreshToken;
     }
 
     /*
