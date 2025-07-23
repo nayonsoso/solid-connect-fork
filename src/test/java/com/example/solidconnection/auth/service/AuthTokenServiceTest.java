@@ -17,10 +17,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 
 @TestContainerSpringBootTest
 @DisplayName("인증 토큰 제공자 테스트")
-class AuthTokenProviderTest {
+class AuthTokenServiceTest {
 
     @Autowired
-    private AuthTokenProvider authTokenProvider;
+    private AuthTokenService authTokenService;
 
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
@@ -35,10 +35,10 @@ class AuthTokenProviderTest {
     @Test
     void 액세스_토큰을_생성한다() {
         // when
-        AccessToken accessToken = authTokenProvider.generateAccessToken(subject);
+        AccessToken accessToken = authTokenService.generateAccessToken(subject);
 
         // then
-        String actualSubject = authTokenProvider.parseSubject(accessToken.token()).value();
+        String actualSubject = authTokenService.parseSubject(accessToken.token()).value();
         assertThat(actualSubject).isEqualTo(subject.value());
     }
 
@@ -48,10 +48,10 @@ class AuthTokenProviderTest {
         @Test
         void 리프레시_토큰을_생성하고_저장한다() {
             // when
-            RefreshToken actualRefreshToken = authTokenProvider.generateAndSaveRefreshToken(subject);
+            RefreshToken actualRefreshToken = authTokenService.generateAndSaveRefreshToken(subject);
 
             // then
-            String actualSubject = authTokenProvider.parseSubject(actualRefreshToken.token()).value();
+            String actualSubject = authTokenService.parseSubject(actualRefreshToken.token()).value();
             String refreshTokenKey = TokenType.REFRESH.addPrefix(subject.value());
             String expectedRefreshToken = redisTemplate.opsForValue().get(refreshTokenKey);
             assertAll(
@@ -63,24 +63,24 @@ class AuthTokenProviderTest {
         @Test
         void 유효한_리프레시_토큰인지_확인한다() {
             // given
-            RefreshToken refreshToken = authTokenProvider.generateAndSaveRefreshToken(subject);
-            AccessToken fakeRefreshToken = authTokenProvider.generateAccessToken(subject);
+            RefreshToken refreshToken = authTokenService.generateAndSaveRefreshToken(subject);
+            AccessToken fakeRefreshToken = authTokenService.generateAccessToken(subject);
 
             // when, then
             assertAll(
-                    () -> assertThat(authTokenProvider.isValidRefreshToken(refreshToken.token())).isTrue(),
-                    () -> assertThat(authTokenProvider.isValidRefreshToken(fakeRefreshToken.token())).isFalse()
+                    () -> assertThat(authTokenService.isValidRefreshToken(refreshToken.token())).isTrue(),
+                    () -> assertThat(authTokenService.isValidRefreshToken(fakeRefreshToken.token())).isFalse()
             );
         }
 
         @Test
         void 액세스_토큰에_해당하는_리프레시_토큰을_삭제한다() {
             // given
-            authTokenProvider.generateAndSaveRefreshToken(subject);
-            AccessToken accessToken = authTokenProvider.generateAccessToken(subject);
+            authTokenService.generateAndSaveRefreshToken(subject);
+            AccessToken accessToken = authTokenService.generateAccessToken(subject);
 
             // when
-            authTokenProvider.deleteRefreshTokenByAccessToken(accessToken);
+            authTokenService.deleteRefreshTokenByAccessToken(accessToken);
 
             // then
             String refreshTokenKey = TokenType.REFRESH.addPrefix(subject.value());
@@ -91,10 +91,10 @@ class AuthTokenProviderTest {
     @Test
     void 토큰으로부터_Subject_를_추출한다() {
         // given
-        String accessToken = authTokenProvider.generateAccessToken(subject).token();
+        String accessToken = authTokenService.generateAccessToken(subject).token();
 
         // when
-        Subject actualSubject = authTokenProvider.parseSubject(accessToken);
+        Subject actualSubject = authTokenService.parseSubject(accessToken);
 
         // then
         assertThat(actualSubject.value()).isEqualTo(subject.value());

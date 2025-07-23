@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class AuthTokenProvider {
+public class AuthTokenService {
 
     private final TokenProvider tokenProvider;
     private final TokenRepository tokenRepository;

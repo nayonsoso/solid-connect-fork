@@ -31,7 +31,7 @@ class AuthServiceTest {
     private AuthService authService;
 
     @Autowired
-    private AuthTokenProvider authTokenProvider;
+    private AuthTokenService authTokenService;
 
     @Autowired
     private TokenBlackListService tokenBlackListService;
@@ -46,7 +46,7 @@ class AuthServiceTest {
     void 로그아웃한다() {
         // given
         Subject subject = new Subject("subject");
-        AccessToken accessToken = authTokenProvider.generateAccessToken(subject);
+        AccessToken accessToken = authTokenService.generateAccessToken(subject);
 
         // when
         authService.signOut(accessToken.token());
@@ -63,8 +63,8 @@ class AuthServiceTest {
     void 탈퇴한다() {
         // given
         SiteUser user = siteUserFixture.사용자();
-        Subject subject = authTokenProvider.parseSubject(user);
-        AccessToken accessToken = authTokenProvider.generateAccessToken(subject);
+        Subject subject = authTokenService.parseSubject(user);
+        AccessToken accessToken = authTokenService.generateAccessToken(subject);
 
         // when
         authService.quit(user, accessToken.token());
@@ -85,22 +85,22 @@ class AuthServiceTest {
         @Test
         void 요청의_리프레시_토큰이_저장되어_있으면_액세스_토큰을_재발급한다() {
             // given
-            RefreshToken refreshToken = authTokenProvider.generateAndSaveRefreshToken(new Subject("subject"));
+            RefreshToken refreshToken = authTokenService.generateAndSaveRefreshToken(new Subject("subject"));
             ReissueRequest reissueRequest = new ReissueRequest(refreshToken.token());
 
             // when
             ReissueResponse reissuedAccessToken = authService.reissue(reissueRequest);
 
             // then - 요청의 리프레시 토큰과 재발급한 액세스 토큰의 subject 가 동일해야 한다.
-            Subject expectedSubject = authTokenProvider.parseSubject(refreshToken.token());
-            Subject actualSubject = authTokenProvider.parseSubject(reissuedAccessToken.accessToken());
+            Subject expectedSubject = authTokenService.parseSubject(refreshToken.token());
+            Subject actualSubject = authTokenService.parseSubject(reissuedAccessToken.accessToken());
             assertThat(actualSubject).isEqualTo(expectedSubject);
         }
 
         @Test
         void 요청의_리프레시_토큰이_저장되어있지_않다면_예외가_발생한다() {
             // given
-            String invalidRefreshToken = authTokenProvider.generateAccessToken(new Subject("subject")).token();
+            String invalidRefreshToken = authTokenService.generateAccessToken(new Subject("subject")).token();
             ReissueRequest reissueRequest = new ReissueRequest(invalidRefreshToken);
 
             // when, then

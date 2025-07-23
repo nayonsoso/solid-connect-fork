@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AuthService {
 
-    private final AuthTokenProvider authTokenProvider;
+    private final AuthTokenService authTokenService;
     private final TokenBlackListService tokenBlackListService;
 
     /*
@@ -27,8 +27,8 @@ public class AuthService {
      * - 엑세스 토큰을 블랙리스트에 추가한다.
      * */
     public void signOut(String token) {
-        AccessToken accessToken = authTokenProvider.parseAccessToken(token);
-        authTokenProvider.deleteRefreshTokenByAccessToken(accessToken);
+        AccessToken accessToken = authTokenService.parseAccessToken(token);
+        authTokenService.deleteRefreshTokenByAccessToken(accessToken);
         tokenBlackListService.addToBlacklist(accessToken);
     }
 
@@ -52,12 +52,12 @@ public class AuthService {
      * */
     public ReissueResponse reissue(ReissueRequest reissueRequest) {
         // 리프레시 토큰 확인
-        if (!authTokenProvider.isValidRefreshToken(reissueRequest.refreshToken())) {
+        if (!authTokenService.isValidRefreshToken(reissueRequest.refreshToken())) {
             throw new CustomException(REFRESH_TOKEN_EXPIRED);
         }
         // 액세스 토큰 재발급
-        Subject subject = authTokenProvider.parseSubject(reissueRequest.refreshToken());
-        AccessToken newAccessToken = authTokenProvider.generateAccessToken(subject);
+        Subject subject = authTokenService.parseSubject(reissueRequest.refreshToken());
+        AccessToken newAccessToken = authTokenService.generateAccessToken(subject);
         return ReissueResponse.from(newAccessToken);
     }
 }

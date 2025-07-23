@@ -13,14 +13,14 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class SignInService {
 
-    private final AuthTokenProvider authTokenProvider;
+    private final AuthTokenService authTokenService;
 
     @Transactional
     public SignInResponse signIn(SiteUser siteUser) {
         resetQuitedAt(siteUser);
-        Subject subject = authTokenProvider.parseSubject(siteUser);
-        AccessToken accessToken = authTokenProvider.generateAccessToken(subject);
-        RefreshToken refreshToken = authTokenProvider.generateAndSaveRefreshToken(subject);
+        Subject subject = authTokenService.parseSubject(siteUser);
+        AccessToken accessToken = authTokenService.generateAccessToken(subject);
+        RefreshToken refreshToken = authTokenService.generateAndSaveRefreshToken(subject);
         return SignInResponse.of(accessToken, refreshToken);
     }
 
