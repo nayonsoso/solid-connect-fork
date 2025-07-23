@@ -46,6 +46,7 @@ public enum ErrorCode {
     MENTOR_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "존재하지 않는 멘토입니다."),
 
     // auth
+    SIGN_IN_FAILED(HttpStatus.UNAUTHORIZED.value(), "로그인에 실패했습니다."),
     USER_ALREADY_SIGN_OUT(HttpStatus.UNAUTHORIZED.value(), "로그아웃 되었습니다."),
     EMPTY_TOKEN(HttpStatus.UNAUTHORIZED.value(), "토큰이 필요한 경로에 빈 토큰으로 요청했습니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED.value(), "유효하지 않은 토큰입니다."),

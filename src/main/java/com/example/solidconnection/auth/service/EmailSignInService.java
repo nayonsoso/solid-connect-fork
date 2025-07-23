@@ -1,6 +1,6 @@
 package com.example.solidconnection.auth.service;
 
-import static com.example.solidconnection.common.exception.ErrorCode.USER_NOT_FOUND;
+import static com.example.solidconnection.common.exception.ErrorCode.SIGN_IN_FAILED;
 
 import com.example.solidconnection.auth.dto.EmailSignInRequest;
 import com.example.solidconnection.auth.dto.SignInResponse;
@@ -8,7 +8,6 @@ import com.example.solidconnection.common.exception.CustomException;
 import com.example.solidconnection.siteuser.domain.AuthType;
 import com.example.solidconnection.siteuser.domain.SiteUser;
 import com.example.solidconnection.siteuser.repository.SiteUserRepository;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,18 +24,19 @@ public class EmailSignInService {
     private final PasswordEncoder passwordEncoder;
 
     public SignInResponse signIn(EmailSignInRequest signInRequest) {
-        Optional<SiteUser> optionalSiteUser = siteUserRepository.findByEmailAndAuthType(signInRequest.email(), AuthType.EMAIL);
-        if (optionalSiteUser.isPresent()) {
-            SiteUser siteUser = optionalSiteUser.get();
-            validatePassword(signInRequest.password(), siteUser.getPassword());
-            return signInService.signIn(siteUser);
-        }
-        throw new CustomException(USER_NOT_FOUND, "이메일과 비밀번호를 확인해주세요.");
+        SiteUser siteUser = getEmailMatchingUserOrThrow(signInRequest.email());
+        validatePassword(signInRequest.password(), siteUser.getPassword());
+        return signInService.signIn(siteUser);
+    }
+
+    private SiteUser getEmailMatchingUserOrThrow(String email) {
+        return siteUserRepository.findByEmailAndAuthType(email, AuthType.EMAIL)
+                .orElseThrow(() -> new CustomException(SIGN_IN_FAILED, "이메일과 비밀번호를 확인해주세요."));
     }
 
     private void validatePassword(String rawPassword, String encodedPassword) {
         if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
-            throw new CustomException(USER_NOT_FOUND, "이메일과 비밀번호를 확인해주세요.");
+            throw new CustomException(SIGN_IN_FAILED, "이메일과 비밀번호를 확인해주세요.");
         }
     }
 }
