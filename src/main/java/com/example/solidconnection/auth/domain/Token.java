@@ -19,7 +19,7 @@ public class Token {
     public Token(Subject subject, Map<String, Object> claims, String tokenValue, TokenType tokenType) {
         this.subject = subject;
         this.claims = claims;
-        this.tokenValue = tokenValue;
+        this.tokenValue = tokenValue; // 이놈도 원시값 포장을 해야하나?!!?!?!
         this.tokenType = tokenType;
     }
 
