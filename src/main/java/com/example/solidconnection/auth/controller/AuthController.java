@@ -10,12 +10,10 @@ import com.example.solidconnection.auth.dto.SignUpRequest;
 import com.example.solidconnection.auth.dto.oauth.OAuthCodeRequest;
 import com.example.solidconnection.auth.dto.oauth.OAuthResponse;
 import com.example.solidconnection.auth.service.AuthService;
-import com.example.solidconnection.auth.service.CommonSignUpTokenProvider;
 import com.example.solidconnection.auth.service.EmailSignInService;
-import com.example.solidconnection.auth.service.EmailSignUpService;
-import com.example.solidconnection.auth.service.EmailSignUpTokenProvider;
 import com.example.solidconnection.auth.service.oauth.OAuthService;
-import com.example.solidconnection.auth.service.oauth.OAuthSignUpService;
+import com.example.solidconnection.auth.service.signup.EmailSignUpService;
+import com.example.solidconnection.auth.service.signup.SignUpService;
 import com.example.solidconnection.common.exception.CustomException;
 import com.example.solidconnection.common.exception.ErrorCode;
 import com.example.solidconnection.common.resolver.AuthorizedUser;
@@ -38,11 +36,9 @@ public class AuthController {
 
     private final AuthService authService;
     private final OAuthService oAuthService;
-    private final OAuthSignUpService oAuthSignUpService;
+    private final SignUpService signUpService;
     private final EmailSignInService emailSignInService;
     private final EmailSignUpService emailSignUpService;
-    private final EmailSignUpTokenProvider emailSignUpTokenProvider;
-    private final CommonSignUpTokenProvider commonSignUpTokenProvider;
 
     @PostMapping("/apple")
     public ResponseEntity<OAuthResponse> processAppleOAuth(
@@ -73,21 +69,15 @@ public class AuthController {
     public ResponseEntity<EmailSignUpTokenResponse> signUpWithEmail(
             @Valid @RequestBody EmailSignUpTokenRequest signUpRequest
     ) {
-        emailSignUpService.validateUniqueEmail(signUpRequest.email());
-        String signUpToken = emailSignUpTokenProvider.generateAndSaveSignUpToken(signUpRequest);
-        return ResponseEntity.ok(new EmailSignUpTokenResponse(signUpToken));
+        EmailSignUpTokenResponse response = emailSignUpService.issueSignUpToken(signUpRequest);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/sign-up")
     public ResponseEntity<SignInResponse> signUp(
             @Valid @RequestBody SignUpRequest signUpRequest
     ) {
-        AuthType authType = commonSignUpTokenProvider.parseAuthType(signUpRequest.signUpToken());
-        if (AuthType.isEmail(authType)) {
-            SignInResponse signInResponse = emailSignUpService.signUp(signUpRequest);
-            return ResponseEntity.ok(signInResponse);
-        }
-        SignInResponse signInResponse = oAuthSignUpService.signUp(signUpRequest);
+        SignInResponse signInResponse = signUpService.signUp(signUpRequest);
         return ResponseEntity.ok(signInResponse);
     }
 

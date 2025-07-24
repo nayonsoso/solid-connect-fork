@@ -1,7 +1,7 @@
 package com.example.solidconnection.auth.service.oauth;
 
 import static com.example.solidconnection.auth.service.oauth.OAuthSignUpTokenProvider.AUTH_TYPE_CLAIM_KEY;
-import static com.example.solidconnection.common.exception.ErrorCode.SIGN_UP_TOKEN_INVALID;
+import static com.example.solidconnection.common.exception.ErrorCode.INVALID_SIGNUP_TOKEN;
 import static com.example.solidconnection.common.exception.ErrorCode.SIGN_UP_TOKEN_NOT_ISSUED_BY_SERVER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -86,7 +86,7 @@ class OAuthSignUpTokenProviderTest {
             // when & then
             assertThatCode(() -> OAuthSignUpTokenProvider.validateSignUpToken(expiredToken))
                     .isInstanceOf(CustomException.class)
-                    .hasMessageContaining(SIGN_UP_TOKEN_INVALID.getMessage());
+                    .hasMessageContaining(INVALID_SIGNUP_TOKEN.getMessage());
         }
 
         @Test
@@ -97,7 +97,7 @@ class OAuthSignUpTokenProviderTest {
             // when & then
             assertThatCode(() -> OAuthSignUpTokenProvider.validateSignUpToken(notJwt))
                     .isInstanceOf(CustomException.class)
-                    .hasMessageContaining(SIGN_UP_TOKEN_INVALID.getMessage());
+                    .hasMessageContaining(INVALID_SIGNUP_TOKEN.getMessage());
         }
 
         @Test
@@ -109,7 +109,7 @@ class OAuthSignUpTokenProviderTest {
             // when & then
             assertThatCode(() -> OAuthSignUpTokenProvider.validateSignUpToken(wrongAuthType))
                     .isInstanceOf(CustomException.class)
-                    .hasMessageContaining(SIGN_UP_TOKEN_INVALID.getMessage());
+                    .hasMessageContaining(INVALID_SIGNUP_TOKEN.getMessage());
         }
 
         @Test
@@ -121,7 +121,7 @@ class OAuthSignUpTokenProviderTest {
             // when & then
             assertThatCode(() -> OAuthSignUpTokenProvider.validateSignUpToken(noSubject))
                     .isInstanceOf(CustomException.class)
-                    .hasMessageContaining(SIGN_UP_TOKEN_INVALID.getMessage());
+                    .hasMessageContaining(INVALID_SIGNUP_TOKEN.getMessage());
         }
 
         @Test

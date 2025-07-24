@@ -41,7 +41,7 @@ public class AuthTokenService {
     }
 
     public void deleteRefreshTokenByAccessToken(AccessToken accessToken) {
-        Subject subject = accessToken.getPayload().subject();
+        Subject subject = accessToken.getSubject();
         tokenRepository.deleteBySubjectAndTokenType(subject, TokenType.REFRESH);
     }
 

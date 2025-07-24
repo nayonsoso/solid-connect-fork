@@ -1,6 +1,6 @@
 package com.example.solidconnection.auth.service.oauth;
 
-
+import com.example.solidconnection.auth.domain.SignUpToken;
 import com.example.solidconnection.auth.dto.SignInResponse;
 import com.example.solidconnection.auth.dto.oauth.OAuthCodeRequest;
 import com.example.solidconnection.auth.dto.oauth.OAuthResponse;
@@ -8,10 +8,10 @@ import com.example.solidconnection.auth.dto.oauth.OAuthSignInResponse;
 import com.example.solidconnection.auth.dto.oauth.OAuthUserInfoDto;
 import com.example.solidconnection.auth.dto.oauth.SignUpPrepareResponse;
 import com.example.solidconnection.auth.service.SignInService;
+import com.example.solidconnection.auth.service.signup.SignUpTokenService;
 import com.example.solidconnection.siteuser.domain.AuthType;
 import com.example.solidconnection.siteuser.domain.SiteUser;
 import com.example.solidconnection.siteuser.repository.SiteUserRepository;
-import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,14 +26,14 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class OAuthService {
 
-    private final OAuthSignUpTokenProvider OAuthSignUpTokenProvider;
+    private final SignUpTokenService signUpTokenService;
     private final SignInService signInService;
     private final SiteUserRepository siteUserRepository;
-    private final Map<AuthType, OAuthClient> oauthClientMap;
+    private final OAuthClientMap oauthClientMap;
 
     @Transactional
     public OAuthResponse processOAuth(AuthType authType, OAuthCodeRequest codeRequest) {
-        OAuthClient oauthClient = oauthClientMap.get(authType);
+        OAuthClient oauthClient = oauthClientMap.getOAuthClient(authType);
         OAuthUserInfoDto userInfo = oauthClient.getUserInfo(codeRequest.code());
         Optional<SiteUser> optionalSiteUser = siteUserRepository.findByEmailAndAuthType(userInfo.getEmail(), authType);
 
@@ -51,7 +51,7 @@ public class OAuthService {
     }
 
     private SignUpPrepareResponse getSignUpPrepareResponse(OAuthUserInfoDto userInfoDto, AuthType authType) {
-        String signUpToken = OAuthSignUpTokenProvider.generateAndSaveSignUpToken(userInfoDto.getEmail(), authType);
-        return SignUpPrepareResponse.of(userInfoDto, signUpToken);
+        SignUpToken signUpToken = signUpTokenService.generateAndSaveSignUpToken(userInfoDto.getEmail(), authType);
+        return SignUpPrepareResponse.of(userInfoDto, signUpToken.getTokenValue());
     }
 }

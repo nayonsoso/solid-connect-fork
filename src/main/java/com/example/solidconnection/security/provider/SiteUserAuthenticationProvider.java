@@ -23,7 +23,7 @@ public class SiteUserAuthenticationProvider implements AuthenticationProvider {
         JwtAuthentication jwtAuth = (JwtAuthentication) auth;
         String token = jwtAuth.getToken();
 
-        String username = tokenProvider.parseSubject(token);
+        String username = tokenProvider.parseSubject(token).value();
         SiteUserDetails userDetails = (SiteUserDetails) siteUserDetailsService.loadUserByUsername(username);
         return new SiteUserAuthentication(token, userDetails);
     }

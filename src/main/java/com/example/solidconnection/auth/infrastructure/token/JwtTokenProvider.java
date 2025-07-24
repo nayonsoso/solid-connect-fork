@@ -2,8 +2,8 @@ package com.example.solidconnection.auth.infrastructure.token;
 
 import static com.example.solidconnection.common.exception.ErrorCode.INVALID_TOKEN;
 
-import com.example.solidconnection.auth.domain.Payload;
 import com.example.solidconnection.auth.domain.Subject;
+import com.example.solidconnection.auth.domain.Token;
 import com.example.solidconnection.auth.domain.TokenType;
 import com.example.solidconnection.auth.infrastructure.token.config.JwtProperties;
 import com.example.solidconnection.auth.service.TokenProvider;
@@ -12,9 +12,14 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+/*
+ * jwt 토큰을 생성, 파싱하는 클래스
+ * 이 클래스 안에서만 jwt 기술이 사용되고, 외부에서는 POJO만 사용될 수 있다.
+ * */
 @Component
 @RequiredArgsConstructor
 public class JwtTokenProvider implements TokenProvider {
@@ -23,22 +28,22 @@ public class JwtTokenProvider implements TokenProvider {
 
     @Override
     public final String generateTokenValue(Subject subject, TokenType tokenType) {
-        Claims claims = Jwts.claims().setSubject(subject.value());
-        return generateJwtTokenValue(claims, tokenType);
+        Claims jwtClaims = Jwts.claims().setSubject(subject.value());
+        return generateJwtTokenValue(jwtClaims, tokenType);
     }
 
     @Override
-    public String generateTokenValue(Payload payload, TokenType tokenType) {
-        Claims claims = Jwts.claims().setSubject(payload.subject().value());
-        claims.putAll(payload.claims());
-        return generateJwtTokenValue(claims, tokenType);
+    public String generateTokenValue(Subject subject, Map<String, Object> claims, TokenType tokenType) {
+        Claims jwtClaims = Jwts.claims().setSubject(subject.value());
+        jwtClaims.putAll(claims);
+        return generateJwtTokenValue(jwtClaims, tokenType);
     }
 
-    private String generateJwtTokenValue(Claims claims, TokenType tokenType) {
+    private String generateJwtTokenValue(Claims jwtClaims, TokenType tokenType) {
         Date now = new Date();
         Date expiredDate = new Date(now.getTime() + tokenType.getExpireTime());
         return Jwts.builder()
-                .setClaims(claims)
+                .setClaims(jwtClaims)
                 .setIssuedAt(now)
                 .setExpiration(expiredDate)
                 .signWith(SignatureAlgorithm.HS512, jwtProperties.secret())
@@ -46,20 +51,22 @@ public class JwtTokenProvider implements TokenProvider {
     }
 
     @Override
-    public Subject parseSubject(String token) {
-        String subject = parsePayload(token).subject().value();
-        return new Subject(subject);
+    public Token parseToken(String tokenValue, TokenType tokenType) {
+        return new Token(parseSubject(tokenValue), parseJwtClaims(tokenValue), tokenValue, tokenType);
     }
 
     @Override
-    public Payload parsePayload(String token) {
+    public Subject parseSubject(String tokenValue) {
+        String jwtSubject = parseJwtClaims(tokenValue).getSubject();
+        return new Subject(jwtSubject);
+    }
+
+    private Claims parseJwtClaims(String token) {
         try {
-            Claims claims = Jwts.parser()
+            return Jwts.parser()
                     .setSigningKey(jwtProperties.secret())
                     .parseClaimsJws(token)
                     .getBody();
-            Subject subject = new Subject(claims.getSubject());
-            return new Payload(subject, claims);
         } catch (Exception e) {
             throw new CustomException(INVALID_TOKEN);
         }

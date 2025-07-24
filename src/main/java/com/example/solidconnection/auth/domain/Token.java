@@ -1,33 +1,48 @@
 package com.example.solidconnection.auth.domain;
 
+import java.util.HashMap;
+import java.util.Map;
 import lombok.Getter;
 
 @Getter
 public class Token {
 
-    protected Payload payload;
+    protected Subject subject;
+    protected Map<String, Object> claims;
     protected String tokenValue;
     protected TokenType tokenType;
 
-    public Token(String subject, String tokenValue, TokenType tokenType) {
-        this(new Subject(subject), tokenValue, tokenType);
-    }
-
     public Token(Subject subject, String tokenValue, TokenType tokenType) {
-        this(new Payload(subject), tokenValue, tokenType);
+        this(subject, new HashMap<>(), tokenValue, tokenType);
     }
 
-    public Token(Payload payload, String tokenValue, TokenType tokenType) {
-        this.payload = payload;
+    public Token(Subject subject, Map<String, Object> claims, String tokenValue, TokenType tokenType) {
+        this.subject = subject;
+        this.claims = claims;
         this.tokenValue = tokenValue;
         this.tokenType = tokenType;
     }
 
     public String getTokenKey() {
-        return tokenType.addPrefix(payload.subject().value());
+        return tokenType.addPrefix(subject.value());
     }
 
     public long getExpiredTime() {
         return tokenType.getExpireTime();
+    }
+
+    public void putClaim(String key, Object value) {
+        this.claims.put(key, value);
+    }
+
+    public <T> T getClaim(String key, Class<T> type) {
+        if (!this.claims.containsKey(key)) {
+            throw new IllegalArgumentException("Claim not found: " + key);
+        }
+        Object value = this.claims.get(key);
+        if (!type.isInstance(value)) {
+            throw new IllegalArgumentException("Claim type mismatch for key: " + key);
+        }
+        return type.cast(value);
     }
 }
