@@ -40,12 +40,13 @@ public class SignUpService {
     public SignInResponse signUp(SignUpRequest signUpRequest) {
         // 검증
         SignUpToken signUpToken = signUpTokenService.parseSignUpToken(signUpRequest.signUpToken());
+        AuthType authType = signUpTokenService.parseAuthType(signUpToken);
         signUpTokenService.validateIssuedByServer(signUpToken);
-        validateUserNotDuplicated(signUpToken.getEmail(), signUpToken.getAuthType());
+        validateUserNotDuplicated(signUpToken.getEmail(), authType);
         validateNicknameDuplicated(signUpRequest.nickname());
 
         // 임시 저장된 비밀번호 가져오기
-        String password = getTemporarySavedPassword(signUpToken.getEmail(), signUpToken.getAuthType());
+        String password = getTemporarySavedPassword(signUpToken.getEmail(), authType);
 
         // 사용자 저장
         SiteUser siteUser = siteUserRepository.save(new SiteUser(
@@ -54,7 +55,7 @@ public class SignUpService {
                 signUpRequest.profileImageUrl(),
                 signUpRequest.exchangeStatus(),
                 Role.MENTEE,
-                signUpToken.getAuthType(),
+                authType,
                 password
         ));
 

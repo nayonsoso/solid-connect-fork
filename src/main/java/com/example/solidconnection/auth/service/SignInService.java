@@ -19,7 +19,7 @@ public class SignInService {
     public SignInResponse signIn(SiteUser siteUser) {
         resetQuitedAt(siteUser);
         Subject subject = authTokenService.parseSubject(siteUser);
-        AccessToken accessToken = authTokenService.generateAccessToken(subject);
+        AccessToken accessToken = authTokenService.generateAccessToken(subject, siteUser.getRole());
         RefreshToken refreshToken = authTokenService.generateAndSaveRefreshToken(subject);
         return SignInResponse.of(accessToken, refreshToken);
     }

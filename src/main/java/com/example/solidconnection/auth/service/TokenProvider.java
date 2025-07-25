@@ -1,17 +1,17 @@
 package com.example.solidconnection.auth.service;
 
+import com.example.solidconnection.auth.domain.PrivateClaims;
 import com.example.solidconnection.auth.domain.Subject;
 import com.example.solidconnection.auth.domain.Token;
-import com.example.solidconnection.auth.domain.TokenType;
-import java.util.Map;
+import com.example.solidconnection.auth.domain.TokenValue;
 
 public interface TokenProvider {
 
-    String generateTokenValue(Subject subject, TokenType tokenType);
+    TokenValue generateTokenValue(Subject subject, long expireTime);
 
-    String generateTokenValue(Subject subject, Map<String, Object> claims, TokenType tokenType);
+    TokenValue generateTokenValue(Subject subject, PrivateClaims privateClaims, long expireTime);
 
-    Token parseToken(String tokenValue, TokenType tokenType);
+    <T extends Token> T parseToken(String tokenValue, Class<T> tokenType);
 
     Subject parseSubject(String tokenValue);
 }

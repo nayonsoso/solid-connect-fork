@@ -1,11 +1,14 @@
 package com.example.solidconnection.auth.service;
 
 import com.example.solidconnection.auth.domain.AccessToken;
+import com.example.solidconnection.auth.domain.PrivateClaims;
 import com.example.solidconnection.auth.domain.RefreshToken;
 import com.example.solidconnection.auth.domain.Subject;
-import com.example.solidconnection.auth.domain.Token;
-import com.example.solidconnection.auth.domain.TokenType;
+import com.example.solidconnection.auth.domain.TokenValue;
+import com.example.solidconnection.auth.domain.config.TokenProperties;
+import com.example.solidconnection.siteuser.domain.Role;
 import com.example.solidconnection.siteuser.domain.SiteUser;
+import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -14,19 +17,26 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AuthTokenService {
 
+    private static final String ROLE_CLAIM_KEY = "role";
+
     private final TokenProvider tokenProvider;
     private final TokenRepository tokenRepository;
+    private final TokenProperties tokenProperties;
 
-    public AccessToken generateAccessToken(Subject subject) {
-        String tokenValue = tokenProvider.generateTokenValue(subject, TokenType.ACCESS);
-        return new AccessToken(subject, tokenValue);
+    public AccessToken generateAccessToken(Subject subject, Role role) {
+        PrivateClaims privateClaims = new PrivateClaims(Map.of(ROLE_CLAIM_KEY, role.name()));
+        TokenValue tokenValue = tokenProvider.generateTokenValue(
+                subject, privateClaims, tokenProperties.accessToken().expireTime()
+        );
+        return new AccessToken(subject, privateClaims, tokenValue);
     }
 
     public RefreshToken generateAndSaveRefreshToken(Subject subject) {
-        String tokenValue = tokenProvider.generateTokenValue(subject, TokenType.REFRESH);
+        TokenValue tokenValue = tokenProvider.generateTokenValue(
+                subject, tokenProperties.refreshToken().expireTime()
+        );
         RefreshToken refreshToken = new RefreshToken(subject, tokenValue);
-        tokenRepository.save(refreshToken);
-        return refreshToken;
+        return tokenRepository.save(refreshToken);
     }
 
     /*
@@ -36,13 +46,17 @@ public class AuthTokenService {
      * */
     public boolean isValidRefreshToken(String requestedToken) {
         Subject subject = tokenProvider.parseSubject(requestedToken);
-        Optional<Token> optionalToken = tokenRepository.findBySubjectAndTokenType(subject, TokenType.REFRESH);
-        return optionalToken.isPresent() && optionalToken.get().getTokenValue().equals(requestedToken);
+        Optional<TokenValue> optionalToken = tokenRepository.findTokenValueBySubjectAndKeyPrefix(
+                subject, tokenProperties.refreshToken().storageKeyPrefix()
+        );
+        return optionalToken.isPresent() && optionalToken.get().value().equals(requestedToken);
     }
 
     public void deleteRefreshTokenByAccessToken(AccessToken accessToken) {
         Subject subject = accessToken.getSubject();
-        tokenRepository.deleteBySubjectAndTokenType(subject, TokenType.REFRESH);
+        tokenRepository.deleteBySubjectAndKeyPrefix(
+                subject, tokenProperties.refreshToken().storageKeyPrefix()
+        );
     }
 
     public Subject parseSubject(String token) {
@@ -54,6 +68,6 @@ public class AuthTokenService {
     }
 
     public AccessToken parseAccessToken(String token) {
-        return new AccessToken(parseSubject(token), token);
+        return tokenProvider.parseToken(token, AccessToken.class);
     }
 }

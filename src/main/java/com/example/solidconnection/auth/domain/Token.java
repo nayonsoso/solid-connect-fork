@@ -1,6 +1,5 @@
 package com.example.solidconnection.auth.domain;
 
-import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
 
@@ -8,41 +7,34 @@ import lombok.Getter;
 public class Token {
 
     protected Subject subject;
-    protected Map<String, Object> claims;
-    protected String tokenValue;
-    protected TokenType tokenType;
+    protected PrivateClaims privateClaims;
+    protected TokenValue tokenValue;
 
-    public Token(Subject subject, String tokenValue, TokenType tokenType) {
-        this(subject, new HashMap<>(), tokenValue, tokenType);
+    public Token(
+            Subject subject,
+            TokenValue tokenValue
+    ) {
+        this(subject, new PrivateClaims(Map.of()), tokenValue);
     }
 
-    public Token(Subject subject, Map<String, Object> claims, String tokenValue, TokenType tokenType) {
+    public Token(
+            Subject subject,
+            PrivateClaims privateClaims,
+            TokenValue tokenValue
+    ) {
         this.subject = subject;
-        this.claims = claims;
-        this.tokenValue = tokenValue; // 이놈도 원시값 포장을 해야하나?!!?!?!
-        this.tokenType = tokenType;
+        this.privateClaims = privateClaims;
+        this.tokenValue = tokenValue;
     }
 
-    public String getTokenKey() {
-        return tokenType.addPrefix(subject.value());
+    public String getTokenValue() {
+        return tokenValue.value();
     }
 
-    public long getExpiredTime() {
-        return tokenType.getExpireTime();
-    }
-
-    public void putClaim(String key, Object value) {
-        this.claims.put(key, value);
-    }
-
-    public <T> T getClaim(String key, Class<T> type) {
-        if (!this.claims.containsKey(key)) {
+    public String getClaim(String key) {
+        if (!privateClaims.claims().containsKey(key)) {
             throw new IllegalArgumentException("Claim not found: " + key);
         }
-        Object value = this.claims.get(key);
-        if (!type.isInstance(value)) {
-            throw new IllegalArgumentException("Claim type mismatch for key: " + key);
-        }
-        return type.cast(value);
+        return this.privateClaims.claims().get(key);
     }
 }

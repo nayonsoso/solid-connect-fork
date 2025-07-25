@@ -50,14 +50,14 @@ public class AuthService {
      * - 유효한 리프레시토큰이면, 액세스 토큰을 재발급한다.
      * - 그렇지 않으면 예외를 발생시킨다.
      * */
-    public ReissueResponse reissue(ReissueRequest reissueRequest) {
+    public ReissueResponse reissue(SiteUser siteUser, ReissueRequest reissueRequest) {
         // 리프레시 토큰 확인
         if (!authTokenService.isValidRefreshToken(reissueRequest.refreshToken())) {
             throw new CustomException(REFRESH_TOKEN_EXPIRED);
         }
         // 액세스 토큰 재발급
         Subject subject = authTokenService.parseSubject(reissueRequest.refreshToken());
-        AccessToken newAccessToken = authTokenService.generateAccessToken(subject);
+        AccessToken newAccessToken = authTokenService.generateAccessToken(subject, siteUser.getRole());
         return ReissueResponse.from(newAccessToken);
     }
 }

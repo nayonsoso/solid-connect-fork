@@ -2,14 +2,14 @@ package com.example.solidconnection.auth.service;
 
 import com.example.solidconnection.auth.domain.Subject;
 import com.example.solidconnection.auth.domain.Token;
-import com.example.solidconnection.auth.domain.TokenType;
+import com.example.solidconnection.auth.domain.TokenValue;
 import java.util.Optional;
 
 public interface TokenRepository {
 
-    Token save(Token token);
+    <T extends Token> T save(T token);
 
-    Optional<Token> findBySubjectAndTokenType(Subject subject, TokenType tokenType);
+    Optional<TokenValue> findTokenValueBySubjectAndKeyPrefix(Subject subject, String keyPrefix);
 
-    void deleteBySubjectAndTokenType(Subject subject, TokenType tokenType);
+    void deleteBySubjectAndKeyPrefix(Subject subject, String keyPrefix);
 }
